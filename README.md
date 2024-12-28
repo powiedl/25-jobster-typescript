@@ -16,8 +16,8 @@ Man kann dann folgende Dateien "löschen" (diese Dateien dienen dazu zu sehen, d
 
 - src/Random.tsx
 - src/random.test.tsx
-- src/**tests**/Random.test.tsx
-- src/**tests**/App.test.tsx
+- src/`__tests__`/Random.test.tsx
+- src/`__tests__`/App.test.tsx
 
 Und den Inhalt von src/App.tsx sollte man durch die eigene App.tsx ersetzen.
 
