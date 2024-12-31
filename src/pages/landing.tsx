@@ -1,12 +1,14 @@
-import logo from '../assets/images/logo.svg';
+import { Logo } from '@/components';
 import main from '../assets/images/main.svg';
+import { Button } from '@/components/ui/button';
+
 const Landing = () => {
   return (
-    <main className='m-4 sm:m-6 md:m-8 lg:m-12 xl:m-20'>
+    <main className='mx-4 my-4 sm:my-6 md:my-8 lg:my-12 xl:my-20 max-w-7xl'>
       <nav>
-        <img src={logo} alt='logo' />
+        <Logo />
       </nav>
-      <div className='container grid md:grid-cols-2 grid-cols-1'>
+      <div className='container grid md:grid-cols-2 grid-cols-1 gap-x-4'>
         <div className='flex flex-col gap-y-6 justify-center mr-8 my-12'>
           <h1 className='text-3xl font-semibold'>
             Job<span className='text-blue-500 font-bold'>Tracking</span> App
@@ -19,7 +21,9 @@ const Landing = () => {
             wayfarers, cornhole jianbing selfies flexitarian kickstarter echo
             park.
           </p>
-          <button className='button'>Start Now</button>
+          <Button className='mx-auto w-fit text-lg px-4' size='sm'>
+            Login/Register
+          </Button>
         </div>
         <img className='hidden md:block' src={main} alt='main' />
       </div>

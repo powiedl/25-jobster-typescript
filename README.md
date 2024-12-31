@@ -6,7 +6,7 @@ The jobster project he develops within this course isn't Typescript, so I try to
 
 ## Clone basis repo as "Starting point"
 
-[https://www.udemy.com/course/react-tutorial-and-projects-course](https://www.udemy.com/course/react-tutorial-and-projects-course)
+[https://github.com/powiedl/02-testing-project-template.git](https://github.com/powiedl/02-testing-project-template.git)
 
 # Add shadcn/ui
 
@@ -84,3 +84,17 @@ I've answered the questions as follows:
 - Would you like to use CSS variables for theming? **yes**
 
 # commit: shadcn/ui installed
+
+## Add Button from shadcn/ui
+
+```
+npx shadcn@latest add button
+```
+
+# React Router
+
+I go with React Router 7 (which is the latest of the time of writing this app) as this seems to add the Typescript support (at least I didn't find any information about type safety in the React Router 6 documentation). So my npm install is as follows.
+
+```sh
+npm install react-router-dom@7
+```
