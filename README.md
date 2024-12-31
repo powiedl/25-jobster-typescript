@@ -100,3 +100,37 @@ npm install react-router-dom@7
 ```
 
 # commit: react router 7 and typo in README.md fixed
+
+## Configure your project for React Router Type Safety
+
+You can follow along the documentation of React Router for [Type Safety](https://reactrouter.com/how-to/route-module-type-safety).
+
+## Add .react-router to .gitignore
+
+Add the following line to your .gitignore file
+
+```
+.react-router/
+```
+
+## Include the generated types in tsconfig
+
+Add these lines and modify the last line:
+
+```
+    /* React Router */
+    "rootDirs": [".", "./react-router/types"]
+  },
+  "include": ["src", ".react-router/types/**/*"]
+}
+```
+
+## Generate types before type checking
+
+You can add this line to your package.json (scripts section) - but this is not a must:
+
+```
+    "typecheck": "react-router typegen && tsc"
+```
+
+# commit: basic router setup

@@ -1,4 +1,5 @@
 import { Logo } from '@/components';
+import { Link } from 'react-router-dom';
 import main from '../assets/images/main.svg';
 import { Button } from '@/components/ui/button';
 
@@ -21,8 +22,8 @@ const Landing = () => {
             wayfarers, cornhole jianbing selfies flexitarian kickstarter echo
             park.
           </p>
-          <Button className='mx-auto w-fit text-lg px-4' size='sm'>
-            Login/Register
+          <Button className='mx-auto w-fit text-lg px-4' size='sm' asChild>
+            <Link to='/register'>Login / Register</Link>
           </Button>
         </div>
         <img className='hidden md:block' src={main} alt='main' />
