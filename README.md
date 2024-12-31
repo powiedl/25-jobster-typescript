@@ -93,8 +93,10 @@ npx shadcn@latest add button
 
 # React Router
 
-I go with React Router 7 (which is the latest of the time of writing this app) as this seems to add the Typescript support (at least I didn't find any information about type safety in the React Router 6 documentation). So my npm install is as follows.
+I go with React Router 7 (which is the latest at the time of writing this app) as this seems to add the Typescript support (at least I didn't find any information about type safety in the React Router 6 documentation). So my npm install is as follows.
 
 ```sh
 npm install react-router-dom@7
 ```
+
+# commit: react router 7 and typo in README.md fixed
