@@ -9,7 +9,7 @@ it('should render heading with correct text', () => {
   render(<App />);
 
   // Log the DOM tree for debugging
-  screen.debug();
+  //screen.debug();
 
   // Find heading by its text content
   const heading = screen.getByText('React Testing Library');
