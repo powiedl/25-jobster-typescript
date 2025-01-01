@@ -6,7 +6,7 @@ import {
   AllJobsPage,
   ProfilePage,
 } from './pages/dashboard';
-import { Landing, Error, Register } from './pages';
+import { Landing, Error, Register, ProtectedRoute } from './pages';
 import { Toaster } from '@/components/ui/toaster';
 
 function App() {
@@ -14,7 +14,14 @@ function App() {
     <div className='flex justify-center w-full h-screen'>
       <BrowserRouter>
         <Routes>
-          <Route path='/' element={<SharedLayout />}>
+          <Route
+            path='/'
+            element={
+              <ProtectedRoute>
+                <SharedLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<StatsPage />} />
             <Route path='all-jobs' element={<AllJobsPage />} />
             <Route path='add-job' element={<AddJobPage />} />

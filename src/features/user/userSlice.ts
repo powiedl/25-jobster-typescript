@@ -19,12 +19,14 @@ interface UserState {
   isLoading: boolean;
   error: string | null;
   success: string | null;
+  isSidebarOpen?: boolean;
   user: User | null;
 }
 const initialState: UserState = {
   isLoading: false,
   error: null,
   success: null,
+  isSidebarOpen: false,
   user: getUserFromLocalStorage(),
 };
 
@@ -60,13 +62,19 @@ export const loginUser = createAsyncThunk(
         error?.response?.data?.msg || 'Something went wrong'
       );
     }
-
-    console.log(`Login User: ${JSON.stringify(user)}`);
   }
 );
 
 export const clearMessages = createAction<void, 'user/clearMessages'>(
   'user/clearMessages'
+);
+
+export const toggleSidebar = createAction<void, 'user/toggleSidebar'>(
+  'user/toggleSidebar'
+);
+
+export const logoutUser = createAction<void, 'user/logoutUser'>(
+  'user/logoutUser'
 );
 
 const userSlice = createSlice({
@@ -76,6 +84,14 @@ const userSlice = createSlice({
     clearMessages: (state) => {
       state.error = null;
       state.success = null;
+    },
+    toggleSidebar: (state) => {
+      state.isSidebarOpen = !state.isSidebarOpen;
+    },
+    logoutUser: (state) => {
+      removeUserFromLocalStorage();
+      state.user = null;
+      state.isSidebarOpen = false;
     },
   },
   extraReducers: (builder) => {
