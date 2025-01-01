@@ -392,3 +392,5 @@ const RegisterPage = () => {
   );
 };
 ```
+
+# commit: Register / Sign In form
