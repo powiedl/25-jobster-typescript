@@ -435,7 +435,8 @@ const initialState: UserState = {
   error: null,
   success: null,
   user: null,
-};```
+};
+```
 
 ## Typing useDispatch and useSelector
 
@@ -555,3 +556,5 @@ Some points to mention:
 This part has no specialities for Typescript ... I do this commit only to keep things clean.
 
 # commit add all the routes and start setup of user interface, Navbar optical complete
+
+# commit Navbar complete
