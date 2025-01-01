@@ -58,7 +58,9 @@ const RegisterPage = () => {
           className='flex flex-col gap-y-2'
         >
           <Logo />
-          <h3 className='text-3xl font-semibold text-center'>Login</h3>
+          <h3 className='text-3xl font-semibold text-center'>
+            {stateIsMember ? 'Login' : 'Register'}
+          </h3>
           {!stateIsMember && (
             <CustomFormField name='name' type='text' control={form.control} />
           )}
@@ -91,6 +93,7 @@ const RegisterPage = () => {
                 variant='link'
                 onClick={() => handleChangeIsMember(form, false)}
                 type='button'
+                className='text-blue-500 hover:text-blue-700 hover:cursor-pointer'
               >
                 Register
               </Button>
@@ -102,6 +105,7 @@ const RegisterPage = () => {
                 variant='link'
                 onClick={() => handleChangeIsMember(form, true)}
                 type='button'
+                className='text-blue-500 hover:text-blue-700 hover:cursor-pointer'
               >
                 Sign In
               </Button>
