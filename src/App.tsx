@@ -1,5 +1,12 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Landing, Error, Register, Dashboard } from './pages';
+import {
+  SharedLayout,
+  StatsPage,
+  AddJobPage,
+  AllJobsPage,
+  ProfilePage,
+} from './pages/dashboard';
+import { Landing, Error, Register } from './pages';
 import { Toaster } from '@/components/ui/toaster';
 
 function App() {
@@ -7,7 +14,12 @@ function App() {
     <div className='flex justify-center w-full h-screen'>
       <BrowserRouter>
         <Routes>
-          <Route path='/' element={<Dashboard />} />
+          <Route path='/' element={<SharedLayout />}>
+            <Route index element={<StatsPage />} />
+            <Route path='all-jobs' element={<AllJobsPage />} />
+            <Route path='add-job' element={<AddJobPage />} />
+            <Route path='profile' element={<ProfilePage />} />
+          </Route>
           <Route path='/register' element={<Register />} />
           <Route path='/landing' element={<Landing />} />
           <Route path='*' element={<Error />} />

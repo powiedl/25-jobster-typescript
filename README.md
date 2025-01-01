@@ -553,3 +553,5 @@ Some points to mention:
 # commit save user in localStorage
 
 This part has no specialities for Typescript ... I do this commit only to keep things clean.
+
+# commit add all the routes and start setup of user interface, Navbar optical complete
