@@ -7,6 +7,10 @@ import { CustomFormField } from '@/components';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@radix-ui/react-checkbox';
 import { useState } from 'react';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux-toolkit';
+import { store } from '@/store';
+import { loginUser, registerUser } from '@/features/user/userSlice';
+//import { useToast } from '@/hooks/use-toast';
 
 const initialState = {
   name: '',
@@ -17,10 +21,30 @@ const initialState = {
 
 const RegisterPage = () => {
   const [stateIsMember, setStateIsMember] = useState(true);
+  const { user, isLoading } = useAppSelector((store) => store.user);
+  const dispatch = useAppDispatch();
+  //  const { toast } = useToast();
 
   const handleSubmit = (values: registerSchemaType) => {
     console.log('Submitting ...', values);
+    //toast({ description: 'Submitting ...' });
+    if (values?.isMember) {
+      dispatch(loginUser({ email: values.email, password: values.password }));
+      return;
+    }
+    dispatch(
+      registerUser({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+      })
+    );
   };
+
+  const form = useForm<registerSchemaType>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: initialState,
+  });
 
   const handleChangeIsMember = (
     f: UseFormReturn<
@@ -45,11 +69,6 @@ const RegisterPage = () => {
     setStateIsMember(value);
     f.setValue('isMember', value);
   };
-
-  const form = useForm<registerSchemaType>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: initialState,
-  });
   return (
     <main className='mx-4 my-4 sm:my-6 md:my-8 lg:my-12 xl:my-20 max-w-7xl flex flex-col gap-y-2 justify-center align-middle'>
       <Form {...form}>

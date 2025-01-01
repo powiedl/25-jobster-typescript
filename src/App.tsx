@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Landing, Error, Register, Dashboard } from './pages';
+import { Toaster } from '@/components/ui/toaster';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           <Route path='*' element={<Error />} />
         </Routes>
       </BrowserRouter>
+      <Toaster />
     </div>
     //
     //   <Landing />

@@ -394,3 +394,58 @@ const RegisterPage = () => {
 ```
 
 # commit: Register / Sign In form
+
+# Toast component from shadcn/ui
+
+```sh
+npx shadcn@latest add toast
+```
+
+Inside App.ts import the Toaster and add it somewhere inside the App component (but not inside the BrowserRouter). Whereever you want to use the toast, you have to import the useToast hook (from `@/hooks/use-toast`) (which returns a function, usually called toast). This function can be called, when you want to display a toast message. The toast component of shadcn/ui has multiple configuration options so be sure to check out the possibilities in their [documenation](https://ui.shadcn.com/docs/components/toast)
+
+# Redux Toolkit (and Typescript)
+
+The Redux Toolkit documentation has a [TypeScript Quick Start](https://redux-toolkit.js.org/tutorials/typescript) which I used to setup this projekt. Since version 7.2.3 (at the time of the writing we are at version 9.2.0) the @types/react-redux are integrated as a dependency, so there is no need to install it manually.
+
+```sh
+npm i @reduxjs/toolkit react-redux
+```
+
+## Type for state of each slice
+
+The documentation recommends to create an interface for the state of each slice. Inside the `features/user/userSlice.ts` add the interface and type the initialState.
+
+````ts
+type User = {
+  name?: string;
+  password: string;
+  email: string;
+  isMember?: boolean;
+};
+
+interface UserState {
+  isLoading: boolean;
+  user: User | null;
+}
+const initialState: UserState = {
+  isLoading: false,
+  user: null,
+};```
+
+## Typing useDispatch and useSelector
+
+Regarding to the [documentation of Redux Toolkit](https://redux-toolkit.js.org/tutorials/typescript#define-typed-hooks) it is recommended to "generate" typed versions of useDispatch and useSelector and then use this typed versions:
+
+In the `hooks/redux-toolkit.ts` setup the following lines:
+
+```ts
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '@/store';
+
+export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
+export const useAppSelector = useSelector.withTypes<RootState>();
+````
+
+And e. g. in the register.tsx import useAppSelector and use this one (instead of useSelector) and useAppDispatch (instead of useDispatch).
+
+# commit: basic Redux Toolkit setup
