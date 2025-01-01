@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@radix-ui/react-checkbox';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-toolkit';
-import { store } from '@/store';
+import { useNavigate } from 'react-router-dom';
 import {
   loginUser,
   registerUser,
@@ -29,6 +29,7 @@ const RegisterPage = () => {
   const { user, isLoading, error, success } = useAppSelector(
     (store) => store.user
   );
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   //  const { toast } = useToast();
 
@@ -84,6 +85,14 @@ const RegisterPage = () => {
     }
     if (error || success) dispatch(clearMessages());
   }, [success, error, dispatch]);
+
+  useEffect(() => {
+    if (user) {
+      setTimeout(() => {
+        navigate('/');
+      }, 1500);
+    }
+  }, [user, navigate]);
   return (
     <main className='mx-4 my-4 sm:my-6 md:my-8 lg:my-12 xl:my-20 max-w-7xl flex flex-col gap-y-2 justify-center align-middle'>
       <Form {...form}>

@@ -544,4 +544,12 @@ useEffect(() => {
 }, [success, error, dispatch]);
 ```
 
+Some points to mention:
+
+- The type of the error in the try/catch in the async actions seems not to be completely correct. TS infers the error as unknown (in my opinion it should be AxiosError). And AxiosError in the import is marked as "unused".
+
 # commit register and login implemented
+
+# commit save user in localStorage
+
+This part has no specialities for Typescript ... I do this commit only to keep things clean.

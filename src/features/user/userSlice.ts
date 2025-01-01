@@ -1,8 +1,13 @@
 import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit';
 import { type AxiosError } from 'axios';
 import { customFetch } from '@/utils/axios';
+import {
+  getUserFromLocalStorage,
+  addUserToLocalStorage,
+  removeUserFromLocalStorage,
+} from '@/utils/localStorage';
 
-type User = {
+export type User = {
   name?: string;
   password: string;
   email: string;
@@ -20,7 +25,7 @@ const initialState: UserState = {
   isLoading: false,
   error: null,
   success: null,
-  user: null,
+  user: getUserFromLocalStorage(),
 };
 
 export const registerUser = createAsyncThunk(
@@ -83,6 +88,7 @@ const userSlice = createSlice({
       state.isLoading = false;
       state.error = null;
       state.success = `Welcome ${user.name}`;
+      addUserToLocalStorage(user);
       state.user = user;
     });
     builder.addCase(registerUser.rejected, (state, { payload }) => {
@@ -99,6 +105,7 @@ const userSlice = createSlice({
       state.isLoading = false;
       state.error = null;
       state.success = `Welcome back ${user.name}`;
+      addUserToLocalStorage(user);
       state.user = user;
     });
     builder.addCase(loginUser.rejected, (state, { payload }) => {
