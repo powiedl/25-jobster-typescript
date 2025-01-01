@@ -6,10 +6,15 @@ import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { CustomFormField } from '@/components';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@radix-ui/react-checkbox';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-toolkit';
 import { store } from '@/store';
-import { loginUser, registerUser } from '@/features/user/userSlice';
+import {
+  loginUser,
+  registerUser,
+  clearMessages,
+} from '@/features/user/userSlice';
+import { toast } from '@/hooks/use-toast';
 //import { useToast } from '@/hooks/use-toast';
 
 const initialState = {
@@ -21,7 +26,9 @@ const initialState = {
 
 const RegisterPage = () => {
   const [stateIsMember, setStateIsMember] = useState(true);
-  const { user, isLoading } = useAppSelector((store) => store.user);
+  const { user, isLoading, error, success } = useAppSelector(
+    (store) => store.user
+  );
   const dispatch = useAppDispatch();
   //  const { toast } = useToast();
 
@@ -69,6 +76,14 @@ const RegisterPage = () => {
     setStateIsMember(value);
     f.setValue('isMember', value);
   };
+  useEffect(() => {
+    if (error) {
+      toast({ description: error, variant: 'destructive' });
+    } else if (success) {
+      toast({ description: success });
+    }
+    if (error || success) dispatch(clearMessages());
+  }, [success, error, dispatch]);
   return (
     <main className='mx-4 my-4 sm:my-6 md:my-8 lg:my-12 xl:my-20 max-w-7xl flex flex-col gap-y-2 justify-center align-middle'>
       <Form {...form}>
@@ -104,7 +119,9 @@ const RegisterPage = () => {
             )}
           />
 
-          <Button type='submit'>Submit</Button>
+          <Button type='submit' disabled={isLoading}>
+            {!isLoading ? 'Submit' : 'Submitting...'}
+          </Button>
           {stateIsMember ? (
             <p>
               Not a member yet?{' '}

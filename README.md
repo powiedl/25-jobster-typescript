@@ -421,14 +421,19 @@ type User = {
   password: string;
   email: string;
   isMember?: boolean;
+  token?: string; // here we will store the token we get back from the API after login
 };
 
 interface UserState {
   isLoading: boolean;
-  user: User | null;
+  error: string | null;
+  success: string | null; // where we will store success messages for the user
+  user: User | null; // where we will store error messages for the user
 }
 const initialState: UserState = {
   isLoading: false,
+  error: null,
+  success: null,
   user: null,
 };```
 
@@ -449,3 +454,94 @@ export const useAppSelector = useSelector.withTypes<RootState>();
 And e. g. in the register.tsx import useAppSelector and use this one (instead of useSelector) and useAppDispatch (instead of useDispatch).
 
 # commit: basic Redux Toolkit setup
+
+## "Action" user/registerUser
+
+As the shadcn/ui Toast does not have a "native" function to call it, we have to work around it (because we can't use a hook inside a redux action or within an extraReducer). The recommendation is (at least the one I've found: store the message in the store and use this piece of state to display the toast). The reason for the recommendation is "seperation of concerns" (the actions are responsible for manipulating the state data and the Komponents are responsible for displaying the state).
+
+So now you know, what the success and the error properties are good for (in the interface definition). The user also has an additional property token. This is returned by the api after a successful login. This token gets passed to the server at all subsequent API calls.
+
+```ts
+export const registerUser = createAsyncThunk(
+  'user/registerUser',
+  async (user: User, thunkAPI) => {
+    try {
+      const response = await customFetch.post('/auth/register', user);
+      return response.data;
+    } catch (error: AxiosError | Error | unknown) {
+      return thunkAPI.rejectWithValue(
+        error?.response?.data?.msg || 'Something went wrong'
+      );
+    }
+  }
+);
+```
+
+The loginUser is similar.
+
+In addition I've added an extra action (to clear the message information).
+
+```ts
+export const clearMessages = createAction<void, 'user/clearMessages'>(
+  'user/clearMessages'
+);
+```
+
+## extraReducers
+
+Then I've refactored the extraReducers to use the builder approach (which will do John at the end of the course, but as I'm only "loosly" following I thought it will be better to do it upfront).
+
+And you also see my addition of the "normal" reducer (as the actions of John are async and using the middleware it is the first one):
+
+```ts
+const userSlice = createSlice({
+  name: 'user',
+  initialState,
+  reducers: {
+    clearMessages: (state) => {
+      state.error = null;
+      state.success = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(registerUser.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    });
+    builder.addCase(registerUser.fulfilled, (state, { payload }) => {
+      const { user } = payload;
+      state.isLoading = false;
+      state.error = null;
+      state.success = `Welcome ${user.name}`;
+      state.user = user;
+    });
+    builder.addCase(registerUser.rejected, (state, { payload }) => {
+      state.isLoading = false;
+      state.error = payload as string;
+      state.success = null;
+    });
+    ...
+  }
+}
+```
+
+## GUI - showing the toast
+
+In the GUI (register.tsx) I've added useEffect (I will setup a useEffect depending on success and error from the redux user state) and the clearMessages to the imports (inside the useEffect I will call this to clear the messages after I've showed them).
+
+For sure you also have to grab success and error from the useAppSelector() call.
+
+The useEffect is pretty straight forward:
+
+```ts
+useEffect(() => {
+  if (error) {
+    toast({ description: error, variant: 'destructive' });
+  } else if (success) {
+    toast({ description: success });
+  }
+  if (error || success) dispatch(clearMessages());
+}, [success, error, dispatch]);
+```
+
+# commit register and login implemented
