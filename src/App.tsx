@@ -3,7 +3,7 @@ import { Landing, Error, Register, Dashboard } from './pages';
 
 function App() {
   return (
-    <div className='flex justify-center w-full'>
+    <div className='flex justify-center w-full h-screen'>
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<Dashboard />} />
