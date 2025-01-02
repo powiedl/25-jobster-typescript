@@ -79,9 +79,14 @@ export const updateUser = createAsyncThunk(
       return response.data;
     } catch (error: AxiosError | Error | unknown) {
       // update the error state in the store (error.response.data.msg) ...
-      return thunkAPI.rejectWithValue(
-        error?.response?.data?.msg || 'Something went wrong'
-      );
+      if (error?.response?.status === 401) {
+        thunkAPI.dispatch(logoutUser());
+        return thunkAPI.rejectWithValue('Unauthorized! Logging out ...');
+      } else {
+        return thunkAPI.rejectWithValue(
+          error?.response?.data?.msg || 'Something went wrong'
+        );
+      }
     }
   }
 );

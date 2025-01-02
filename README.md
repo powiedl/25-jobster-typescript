@@ -659,3 +659,5 @@ At the moment the Submit Button is not nicely aligned and I can't figure out how
 # commit Profile page
 
 # commit Button position and order of the input fields in Profile page changed
+
+# commit logout if API request returns 401
