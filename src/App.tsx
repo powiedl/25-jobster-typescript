@@ -12,6 +12,7 @@ import { Toaster } from '@/components/ui/toaster';
 function App() {
   return (
     <div className='flex justify-center w-full h-screen'>
+      <Toaster />
       <BrowserRouter>
         <Routes>
           <Route
@@ -32,11 +33,7 @@ function App() {
           <Route path='*' element={<Error />} />
         </Routes>
       </BrowserRouter>
-      <Toaster />
     </div>
-    //
-    //   <Landing />
-    //
   );
 }
 export default App;

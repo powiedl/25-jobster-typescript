@@ -23,12 +23,14 @@ type CustomFormFieldProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: any;
   type: 'text' | 'email' | 'password';
+  className?: string;
 };
 
 export function CustomFormField({
   name,
   type = 'text',
   control,
+  className = '',
 }: CustomFormFieldProps) {
   return (
     <FormField
@@ -38,7 +40,7 @@ export function CustomFormField({
         <FormItem>
           <FormLabel className='capitalize'>{name}</FormLabel>
           <FormControl>
-            <Input {...field} type={type} />
+            <Input {...field} type={type} className={className} />
           </FormControl>
           <FormMessage />
         </FormItem>

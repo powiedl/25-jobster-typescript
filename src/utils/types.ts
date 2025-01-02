@@ -1,5 +1,6 @@
 import * as z from 'zod';
 
+// #region register
 export const registerSchema = z
   .object({
     isMember: z.boolean().optional(),
@@ -31,3 +32,22 @@ export type RegisterFormType = {
   password: string;
   isMember: boolean;
 };
+// #endregion register
+
+// #region profile
+export const profileSchema = z.object({
+  name: z.string().min(2, 'name must be at least 2 characters.'),
+  email: z.string().email('email must be a valid email address.'),
+  lastName: z.string().min(2, 'last name must be at least 2 characters.'),
+  location: z.string().min(2, 'location must be at least 2 characters.'),
+});
+
+export type profileSchemaType = z.infer<typeof profileSchema>;
+
+export type ProfileFormType = {
+  name: string;
+  email: string;
+  lastName: string;
+  location: string;
+};
+// #endregion profile

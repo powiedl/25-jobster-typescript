@@ -629,3 +629,31 @@ Right now I have the check of isSidebarOpen still in both Sidebars. I will now m
 I've not been completely right. In the BigSidebar we neither need the isSidebarOpen nor the check for the width, but in the SmallSidebar we still need both. The check for the width for an early return (otherwise the dialog would not been shown, if isSidebarOpen is true, but the grey background would still be there). And we use the isSidebarOpen in the Dialog to control the open property.
 
 # commit sidebars really finished
+
+A little sidenote: You can achieve an open sidebar on the large screen by default with this line of code in the initialState of the userSlice: `isSidebarOpen: window.innerWidth > 1024 ? true : false,` (instead of hardcoding it to false)
+
+## Profile page
+
+With the Profile page we add two more properties to our user: lastName and location. Both of them need to be optional. The new User type looks like this:
+
+```ts
+export type User = {
+  name?: string;
+  password: string;
+  email: string;
+  isMember?: boolean;
+  token?: string;
+  lastName?: string;
+  location?: string;
+};
+```
+
+We will make a different zodSchema for the profile page (in my opinion this is "simpler" than dealing with the different scenarios in each case in the Register form and the Profile form). It would be "best", if we could "chain" the register schema to the profile schema (even if the password is only available in the register part, so maybe the idea is not as good as I first thought).
+
+The rest was quite straight forward. Copy the types for the register form and modify it to represent the profile page, copy the register form, modify it for the profile form and do the same with the redux action. I called it user/updateUser.
+
+Inside the updateUser code (in the userSlice) you should type the thunkAPI.getState(), so you get rid of the Typescript warning "unknown type": `(thunkAPI.getState() as RootState).user.user?.token`
+
+At the moment the Submit Button is not nicely aligned and I can't figure out how to align it nicely, so (as my main focus is not styling the UI right now) I will go with it. Maybe I find out how to fix this in the future ...
+
+# commit Profile page

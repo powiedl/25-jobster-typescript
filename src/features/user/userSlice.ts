@@ -6,6 +6,7 @@ import {
   addUserToLocalStorage,
   removeUserFromLocalStorage,
 } from '@/utils/localStorage';
+import { RootState } from '@/store';
 
 export type User = {
   name?: string;
@@ -13,6 +14,8 @@ export type User = {
   email: string;
   isMember?: boolean;
   token?: string;
+  lastName?: string;
+  location?: string;
 };
 
 interface UserState {
@@ -26,7 +29,7 @@ const initialState: UserState = {
   isLoading: false,
   error: null,
   success: null,
-  isSidebarOpen: false,
+  isSidebarOpen: window.innerWidth > 1024 ? true : false,
   user: getUserFromLocalStorage(),
 };
 
@@ -51,11 +54,29 @@ export const loginUser = createAsyncThunk(
   'user/loginUser',
   async (user: User, thunkAPI) => {
     try {
-      //const response = await customFetch.post('/auth/testingRegister', {});
       const response = await customFetch.post('/auth/login', user);
       return response.data;
-      //console.log(`Register User: ${JSON.stringify(user)}`);
-      //console.log(response);
+    } catch (error: AxiosError | Error | unknown) {
+      // update the error state in the store (error.response.data.msg) ...
+      return thunkAPI.rejectWithValue(
+        error?.response?.data?.msg || 'Something went wrong'
+      );
+    }
+  }
+);
+
+export const updateUser = createAsyncThunk(
+  'user/updateUser',
+  async (user: User, thunkAPI) => {
+    try {
+      const response = await customFetch.patch('/auth/updateUser', user, {
+        headers: {
+          authorization: `Bearer ${
+            (thunkAPI.getState() as RootState).user.user?.token
+          }`,
+        },
+      });
+      return response.data;
     } catch (error: AxiosError | Error | unknown) {
       // update the error state in the store (error.response.data.msg) ...
       return thunkAPI.rejectWithValue(
@@ -126,6 +147,23 @@ const userSlice = createSlice({
       state.user = user;
     });
     builder.addCase(loginUser.rejected, (state, { payload }) => {
+      state.isLoading = false;
+      state.error = payload as string;
+      state.success = null;
+    });
+    builder.addCase(updateUser.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    });
+    builder.addCase(updateUser.fulfilled, (state, { payload }) => {
+      const { user } = payload;
+      state.isLoading = false;
+      state.error = null;
+      state.success = `Profile updated`;
+      addUserToLocalStorage(user);
+      state.user = user;
+    });
+    builder.addCase(updateUser.rejected, (state, { payload }) => {
       state.isLoading = false;
       state.error = payload as string;
       state.success = null;
