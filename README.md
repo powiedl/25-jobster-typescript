@@ -558,3 +558,32 @@ This part has no specialities for Typescript ... I do this commit only to keep t
 # commit add all the routes and start setup of user interface, Navbar optical complete
 
 # commit Navbar complete
+
+## Small Sidebar
+
+I will use the Dialog from shadcn/ui to build the modal, so we need to install it:
+
+```sh
+npx shadcn@latest add dialog
+```
+
+And then you have to tweak the shadcn/ui dialog a little bit (to prevent it from showing an automatic close button). The simplest way is to comment this lines in components/ui/dialog.tsx out:
+
+```ts
+{
+  /* <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+        <X className="h-4 w-4" />
+        <span className="sr-only">Close</span>
+      </DialogPrimitive.Close> */
+}
+```
+
+And then you should also comment out the import of X (as it is no longer needed). But be aware that this hack will be removed if you install the dialog components once more!
+
+And if you also want to disable the automatic closing of the dialog if the user clicks somewhere outside of the dialog, than you have to add this prop to the DialogContent: ` onInteractOutside={(e) => e.preventDefault()}`
+
+And one big gotcha - at the moment is - it will always try to display the dialog (even on wide screen). And for now I have no idea how to prevent this behaviour. But for now I will proceed with the work, maybe I find a solution for this later ...
+
+As we want to close the modal not only, if we click the close button, but also if we select a link to go to this page, we cannot use `<DialogClose>`, because this would lead to an infinite render. But we don't need it. We just place an ordinary Button and set the onClick to `()=>dispatch(toggleSidebar())`. And the same we do on our NavLinks.
+
+# commit SmallSidebar completed (?)
