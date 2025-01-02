@@ -27,12 +27,14 @@ import { cp } from 'fs';
 const AddJobPage = () => {
   const { job, isLoading, error, success, isEditing, editJobId } =
     useAppSelector((store) => store.job);
+  const { user } = useAppSelector((store) => store.user);
+
   const initialState: JobFormType = {
-    position: job?.position || '',
-    company: job?.company || '',
-    location: job?.location || '',
-    status: job?.status || JobStatus.Pending,
-    mode: job?.mode || JobMode.FullTime,
+    position: '',
+    company: '',
+    location: '',
+    status: JobStatus.Pending,
+    mode: JobMode.FullTime,
   };
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
