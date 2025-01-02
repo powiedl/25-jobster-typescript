@@ -591,3 +591,37 @@ As we want to close the modal not only, if we click the close button, but also i
 Inside the NavLinks component we have to use a little trick to get it working. The onClick property of the NavLink components must look like this: `onClick={() => toggleSidebar && toggleSidebar()}`. But I think that will come in handy when we work on the BigSidebar.
 
 # commit NavLinks component
+
+## BigSidebar - and everything needs to change ...
+
+While working on the BigSidebar - and checking the isSidebarOpen in the SmallSideBar and in the BigSidebar led to the problem in the large screen that the space for the sidebar was "unused", when the sidebar was not shown. To overcome this issue I've moved the check (if the sidebar is open) to the sharedLayout (and display the surrounding div of the sidebars only if isSidebarOpen is true).
+
+```ts
+const SharedLayout = () => {
+  const { isSidebarOpen } = useAppSelector((store) => store.user);
+  return (
+    <div className='flex flex-col lg:flex-row w-full h-full'>
+      {isSidebarOpen && (
+        <div className='block lg:w-40'>
+          <SmallSidebar className='block lg:hidden' />
+          <BigSidebar className='hidden lg:flex h-full' />
+        </div>
+      )}
+```
+
+And in the SmallSidebar and BigSidebar I've added a check for the (inner) screen width. If it is less than 1024 px (lg screen) the BigSidebar early returns and if it's greater than 1024px the SmallSidebar early returns. I show the code of the BigSidebar - the small one is "similar".
+
+```ts
+const [width, setWidth] = useState(window.innerWidth);
+useEffect(() => {
+  const handleResize = () => setWidth(window.innerWidth);
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
+
+if (width <= 1024) return null;
+```
+
+Right now I have the check of isSidebarOpen still in both Sidebars. I will now make a commit and then remove this check, as I think it is not needed anymore.
+
+# commit sidebars finished

@@ -11,11 +11,20 @@ import {
 import { Button } from './ui/button';
 import { toggleSidebar } from '@/features/user/userSlice';
 import NavLinks from './NavLinks';
+import { useEffect, useState } from 'react';
 
 // #radix-\:r9\: > button
 const SmallSidebar = ({ className = '' }: { className?: string }) => {
+  const [width, setWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const { isSidebarOpen } = useAppSelector((store) => store.user);
   const dispatch = useAppDispatch();
+  if (width > 1024) return null; // 1024px is the breakpoint for lg screens
 
   return (
     <div className={className}>
