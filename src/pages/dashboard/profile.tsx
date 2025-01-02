@@ -61,14 +61,15 @@ const ProfilePage = () => {
             className='bg-[--val(--background)]'
           />
           <CustomFormField
-            name='email'
-            type='email'
+            name='lastName'
+            label='last name'
+            type='text'
             control={form.control}
             className='bg-[--val(--background)]'
           />
           <CustomFormField
-            name='lastName'
-            type='text'
+            name='email'
+            type='email'
             control={form.control}
             className='bg-[--val(--background)]'
           />
@@ -79,7 +80,7 @@ const ProfilePage = () => {
             className='bg-[--val(--background)]'
           />
 
-          <Button type='submit' disabled={isLoading}>
+          <Button type='submit' disabled={isLoading} className='self-end'>
             {!isLoading ? 'Submit' : 'Submitting...'}
           </Button>
         </div>

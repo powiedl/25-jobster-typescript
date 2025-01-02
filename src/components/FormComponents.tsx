@@ -19,6 +19,7 @@ import { Input } from './ui/input';
 
 type CustomFormFieldProps = {
   name: string;
+  label?: string;
   // I was not able to figure out what type to use for control
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: any;
@@ -29,6 +30,7 @@ type CustomFormFieldProps = {
 export function CustomFormField({
   name,
   type = 'text',
+  label,
   control,
   className = '',
 }: CustomFormFieldProps) {
@@ -38,7 +40,7 @@ export function CustomFormField({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel className='capitalize'>{name}</FormLabel>
+          <FormLabel className='capitalize'>{label || name}</FormLabel>
           <FormControl>
             <Input {...field} type={type} className={className} />
           </FormControl>

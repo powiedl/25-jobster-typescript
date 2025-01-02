@@ -654,6 +654,8 @@ The rest was quite straight forward. Copy the types for the register form and mo
 
 Inside the updateUser code (in the userSlice) you should type the thunkAPI.getState(), so you get rid of the Typescript warning "unknown type": `(thunkAPI.getState() as RootState).user.user?.token`
 
-At the moment the Submit Button is not nicely aligned and I can't figure out how to align it nicely, so (as my main focus is not styling the UI right now) I will go with it. Maybe I find out how to fix this in the future ...
+At the moment the Submit Button is not nicely aligned and I can't figure out how to align it nicely, so (as my main focus is not styling the UI right now) I will go with it. Later is now - with a little help of my friend VS Code free tier Copilot - it's as simple as add 'self-end' to the button ...
 
 # commit Profile page
+
+# commit Button position and order of the input fields in Profile page changed
