@@ -1,5 +1,4 @@
 import { FaTimes } from 'react-icons/fa';
-import { NavLink } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/hooks/redux-toolkit';
 import Logo from './Logo';
 import {
@@ -11,12 +10,13 @@ import {
 } from './ui/dialog';
 import { Button } from './ui/button';
 import { toggleSidebar } from '@/features/user/userSlice';
-import links from '@/utils/links';
+import NavLinks from './NavLinks';
 
 // #radix-\:r9\: > button
 const SmallSidebar = ({ className = '' }: { className?: string }) => {
   const { isSidebarOpen } = useAppSelector((store) => store.user);
   const dispatch = useAppDispatch();
+
   return (
     <div className={className}>
       <Dialog
@@ -43,23 +43,7 @@ const SmallSidebar = ({ className = '' }: { className?: string }) => {
               The sidebar contains the main navigation links for the dashboard.
             </DialogDescription>
           </DialogHeader>
-          <div className='flex flex-col gap-y-4'>
-            {links.map(({ id, text, path, icon }) => {
-              return (
-                <NavLink
-                  key={id}
-                  to={path}
-                  // className={({ isActive }) =>
-                  //   isActive ? cn('ml-8', navLinkClass) : navLinkClass
-                  // }
-                  className='text-primary-500 text-lg capitalize flex item-center gap-4 aria-[current="page"]:ml-6 aria-[current="page"]:text-blue-500'
-                  onClick={() => dispatch(toggleSidebar())}
-                >
-                  {icon} {text}
-                </NavLink>
-              );
-            })}
-          </div>
+          <NavLinks toggleSidebar={() => dispatch(toggleSidebar())} />
         </DialogContent>
       </Dialog>
     </div>

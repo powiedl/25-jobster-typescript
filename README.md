@@ -587,3 +587,7 @@ And one big gotcha - at the moment is - it will always try to display the dialog
 As we want to close the modal not only, if we click the close button, but also if we select a link to go to this page, we cannot use `<DialogClose>`, because this would lead to an infinite render. But we don't need it. We just place an ordinary Button and set the onClick to `()=>dispatch(toggleSidebar())`. And the same we do on our NavLinks.
 
 # commit SmallSidebar completed (?)
+
+Inside the NavLinks component we have to use a little trick to get it working. The onClick property of the NavLink components must look like this: `onClick={() => toggleSidebar && toggleSidebar()}`. But I think that will come in handy when we work on the BigSidebar.
+
+# commit NavLinks component
