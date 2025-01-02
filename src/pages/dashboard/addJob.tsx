@@ -5,6 +5,7 @@ import { clearMessages } from '@/features/user/userSlice';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-toolkit';
 import { toast } from '@/hooks/use-toast';
 import {
+  Job,
   JobFormType,
   JobMode,
   jobSchema,
@@ -17,6 +18,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import {
   clearValues,
+  createJob,
   handleChange,
   type HandleChangeParamsType,
 } from '@/features/job/jobSlice';
@@ -42,7 +44,7 @@ const AddJobPage = () => {
 
   const handleSubmit = (values: jobSchemaType) => {
     console.log('Submitting ...', values);
-    //dispatch(updateUser(values as User));
+    dispatch(createJob(values as Job));
   };
 
   const formHandleChangeCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
