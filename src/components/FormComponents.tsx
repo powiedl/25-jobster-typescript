@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from './ui/input';
+import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
 type CustomFormFieldProps = {
   name: string;
@@ -67,14 +68,20 @@ export function CustomFormField({
   );
 }
 
-type CustomFormSelectProps = {
+type HelperFormSelectProps = {
+  items: string[];
+  className?: string;
+};
+
+type CustomFormSelectProps = HelperFormSelectProps & {
   name: string;
   // I was not able to figure out what type to use for control
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: any;
-  items: string[];
+  //  items: string[];
   labelText?: string;
-  className?: string;
+  //  className?: string;
+  onValueChange?: (name: string, value: string) => void;
 };
 
 export function CustomFormSelect({
@@ -83,7 +90,18 @@ export function CustomFormSelect({
   items,
   labelText,
   className = '',
+  onValueChange,
 }: CustomFormSelectProps) {
+  const handleChange = (
+    f: ControllerRenderProps<FieldValues, string>,
+    e: string,
+    onValueChange?: (name: string, value: string) => void
+  ) => {
+    //console.log('---------------------------------');
+    onValueChange?.(f.name, e);
+    //console.log('handleChange event', e);
+    f.onChange(e);
+  };
   return (
     <FormField
       control={control}
@@ -91,21 +109,11 @@ export function CustomFormSelect({
       render={({ field }) => (
         <FormItem>
           <FormLabel className='capitalize'>{labelText || name}</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent className={className}>
-              {items.map((item) => {
-                return (
-                  <SelectItem key={item} value={item} className={className}>
-                    {item}
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
+          <Select
+            onValueChange={(e) => handleChange(field, e, onValueChange)}
+            defaultValue={field.value}
+          >
+            <HelperFormSelect items={items} className={className} />
           </Select>
 
           <FormMessage />
@@ -114,3 +122,24 @@ export function CustomFormSelect({
     />
   );
 }
+
+const HelperFormSelect = ({ items, className = '' }: HelperFormSelectProps) => {
+  return (
+    <>
+      <FormControl>
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+      </FormControl>
+      <SelectContent className={className}>
+        {items.map((item) => {
+          return (
+            <SelectItem key={item} value={item} className={className}>
+              {item}
+            </SelectItem>
+          );
+        })}
+      </SelectContent>
+    </>
+  );
+};

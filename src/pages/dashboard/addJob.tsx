@@ -45,11 +45,14 @@ const AddJobPage = () => {
   };
 
   const formHandleChangeCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //console.log('handleChange', e.target.name, e.target.value);
+    saveInStore(e.target.name, e.target.value);
+  };
+
+  const saveInStore = (name: string, value: string) => {
     dispatch(
       handleChange({
-        name: e.target.name,
-        value: e.target.value,
+        name,
+        value,
       } as HandleChangeParamsType)
     );
   };
@@ -100,6 +103,7 @@ const AddJobPage = () => {
               control={form.control}
               labelText='job status'
               items={Object.values(JobStatus)}
+              onValueChange={saveInStore}
               className='form-control bg-muted'
             />
             <CustomFormSelect
@@ -107,6 +111,7 @@ const AddJobPage = () => {
               control={form.control}
               labelText='job mode'
               items={Object.values(JobMode)}
+              onValueChange={saveInStore}
               className='form-control bg-muted'
             />
             <div className='self-end flex justify-between'>

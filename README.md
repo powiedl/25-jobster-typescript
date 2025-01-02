@@ -778,3 +778,19 @@ const jobSlice = createSlice({
 ```
 
 # commit CustomFormField understands an optional onChangeCapture Prop
+
+## CustomFormSelect - save changes to store
+
+For the CustomFormSelect it is simpler, because you don't have to deal with event types. The onChange handler of the Select takes in one string value (which is the option the user has chosen) and from the field you get the name (which corresponds to the piece of state in the redux job store).
+
+I made a helper function (HelperFormSelect) which returns the "inside" of the component (the FormControl and the SelectContent). And I've moved the onValueChange to a handler function which takes three parameters:
+
+1. the field
+2. the "event" (which is the choosen option)
+3. an optional function you can pass into the component as onValueChange. This function must have to string parameters (`name` = the name of the field and `value` = the value to which it should be set)
+
+This handler calls this function (if it is present) with the name and the value and at the end it calls the field.onChange handler (which was the onChange event before).
+
+In the AddJob component I've added a helper function `saveInStore(name:string,value:string)` which I pass down to the CustomFormSelect as onValueChange. Inside of this function I call the dispatch(job/handleChange). And I've refactored the `formHandleChangeCapture` to also call this function with e.target.name and e.target.value.
+
+# commit CustomFormselect - save changes to store
