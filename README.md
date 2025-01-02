@@ -625,3 +625,7 @@ if (width <= 1024) return null;
 Right now I have the check of isSidebarOpen still in both Sidebars. I will now make a commit and then remove this check, as I think it is not needed anymore.
 
 # commit sidebars finished
+
+I've not been completely right. In the BigSidebar we neither need the isSidebarOpen nor the check for the width, but in the SmallSidebar we still need both. The check for the width for an early return (otherwise the dialog would not been shown, if isSidebarOpen is true, but the grey background would still be there). And we use the isSidebarOpen in the Dialog to control the open property.
+
+# commit sidebars really finished
