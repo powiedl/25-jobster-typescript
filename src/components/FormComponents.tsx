@@ -111,7 +111,7 @@ export function CustomFormSelect({
           <FormLabel className='capitalize'>{labelText || name}</FormLabel>
           <Select
             onValueChange={(e) => handleChange(field, e, onValueChange)}
-            defaultValue={field.value}
+            value={field.value}
           >
             <HelperFormSelect items={items} className={className} />
           </Select>

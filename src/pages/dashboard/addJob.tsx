@@ -16,6 +16,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import {
+  clearValues,
   handleChange,
   type HandleChangeParamsType,
 } from '@/features/job/jobSlice';
@@ -48,6 +49,12 @@ const AddJobPage = () => {
     saveInStore(e.target.name, e.target.value);
   };
 
+  const handleClear = () => {
+    dispatch(clearValues());
+    form.setValue('status', initialState.status);
+    form.setValue('mode', initialState.mode);
+    form.reset();
+  };
   const saveInStore = (name: string, value: string) => {
     dispatch(
       handleChange({
@@ -56,7 +63,6 @@ const AddJobPage = () => {
       } as HandleChangeParamsType)
     );
   };
-  const handleClear = () => {};
   useEffect(() => {
     if (error) {
       toast({ description: error, variant: 'destructive' });

@@ -794,3 +794,7 @@ This handler calls this function (if it is present) with the name and the value 
 In the AddJob component I've added a helper function `saveInStore(name:string,value:string)` which I pass down to the CustomFormSelect as onValueChange. Inside of this function I call the dispatch(job/handleChange). And I've refactored the `formHandleChangeCapture` to also call this function with e.target.name and e.target.value.
 
 # commit CustomFormselect - save changes to store
+
+## Clear the form
+
+If you use shadcn/ui (and under the hood react-hook-form) even resetting the form is a little challenge. There is a reset method on the form object, but for the Selects I didn't get it to work. So I manually set them to the same value as in the initialState and AFTERWARDS I call form.reset(). If I call form.reset() upfront, than the GUI does not update (I think because calling form.setValue doesn't trigger a rerender of the component).

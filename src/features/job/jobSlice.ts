@@ -39,6 +39,11 @@ export const handleChange = createAction<
   HandleChangeParamsType,
   'job/handleChange'
 >('job/handleChange');
+
+export const clearValues = createAction<void, 'job/clearValues'>(
+  'job/clearValues'
+);
+
 const jobSlice = createSlice({
   name: 'job',
   initialState,
@@ -59,6 +64,9 @@ const jobSlice = createSlice({
       } else if (name === 'mode') {
         state.job[name] = value as JobMode;
       }
+    },
+    clearValues: (state) => {
+      return { ...initialState };
     },
   },
 });
