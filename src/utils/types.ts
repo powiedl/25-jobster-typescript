@@ -51,3 +51,44 @@ export type ProfileFormType = {
   location: string;
 };
 // #endregion profile
+
+// #region job
+export enum JobStatus {
+  Pending = 'pending',
+  Interview = 'interview',
+  Declined = 'declined',
+}
+
+export enum JobMode {
+  FullTime = 'full-time',
+  PartTime = 'part-time',
+  Internship = 'internship',
+  Remote = 'remote',
+}
+
+export type Job = {
+  position: string;
+  company: string;
+  location: string;
+  status: JobStatus;
+  mode: JobMode;
+};
+
+export const jobSchema = z.object({
+  position: z.string().min(2, 'name must be at least 2 characters.'),
+  company: z.string().min(2, 'company must be at least 2 characters.'),
+  location: z.string().min(2, 'location must be at least 2 characters.'),
+  status: z.nativeEnum(JobStatus),
+  mode: z.nativeEnum(JobMode),
+});
+
+export type jobSchemaType = z.infer<typeof jobSchema>;
+
+export type JobFormType = {
+  position: string;
+  company: string;
+  location: string;
+  status: JobStatus;
+  mode: JobMode;
+};
+// #endregion

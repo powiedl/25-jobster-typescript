@@ -661,3 +661,120 @@ At the moment the Submit Button is not nicely aligned and I can't figure out how
 # commit Button position and order of the input fields in Profile page changed
 
 # commit logout if API request returns 401
+
+## refactor thunks
+
+I've tried to follow the refactor with Typescript - but I've failed. The problem is, that the type of ThunkAPI is `GetThunkAPI<AsyncThunkConfig>`, but the type AsyncThunkConfig is not exported by `@reduxjs/toolkit`. And I was not able to figure out, how to work around this ...
+
+## Add Job page
+
+For the job we need a new slice jobSlice. We need new Types and zod schemas. All this is pretty much the same as it was with the user. But this time I setup the Job type in the `utils/types.ts` file, because I think this is the better place (than the slice-file, which I used in the user slice - but it is not so wrong, that I will correct this mistake).
+
+## "Persist" every change in the Add Job form in the job State
+
+This was quite hard - and in real life I wouldn't have tried to achieve this, but as John went this way I tried to follow. The problem is, that with the shadcn/ui or react-hook-form libraries you do not use controlled inputs. As I tried to follow closely (using the onChange event the form was no longer updated).
+
+A little google search pointed me in the right direction. In ReactJS there is also a onChangeCapture event (which gets triggered in the capture phase). And using this I was able to get the same functionality like John. The setup was hard (as a Typescript newbie).
+
+I had to refactor the CustomFormField to optionally accept a onChangeCapture event handler. First I've extended the Type for the Props of the CustomFormField.
+
+```ts
+type CustomFormFieldProps = {
+  name: string;
+  label?: string;
+  // I was not able to figure out what type to use for control
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  control: any;
+  type: 'text' | 'email' | 'password';
+  className?: string;
+  onChangeCapture?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+};
+```
+
+In the component itself I defined an helper function, which will call the passed handler (if it is present). I think I don't really need this helper, but in the beginning I thought I will have to add some logic to also update the UI (with form.getValues and form.setValue - but with the ChangeCapture event this is not necessary). And inside the Form Control I conditionally render an Input with or without passing the ChangeCapture handler to the underlying Input.
+
+```ts
+export function CustomFormField({
+  name,
+  type = 'text',
+  label,
+  control,
+  className = '',
+  onChangeCapture,
+}: CustomFormFieldProps) {
+  const handleChangeCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChangeCapture?.(e);
+  };
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel className='capitalize'>{label || name}</FormLabel>
+          <FormControl>
+            {onChangeCapture ? (
+              <Input
+                {...field}
+                type={type}
+                className={className}
+                onChangeCapture={(e:React.ChangeEvent<HTMLInputElement>) => handleChangeCapture(e)}
+              />
+            ) : (
+              <Input {...field} type={type} className={className} />
+            )}
+          </FormControl>
+```
+
+And inside the AddJob component I've definded the event handler, which stores the data of the corresponding field in the Redux Store (this function is the same like Johns).
+
+```ts
+const formHandleChangeCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+  dispatch(
+    handleChange({
+      name: e.target.name,
+      value: e.target.value,
+    } as HandleChangeParamsType)
+  );
+};
+```
+
+And finally I've defined a proper type for the handleChange action in the jobSlice.ts. As this is the first action with a "real" payload (the other actions in the userSlice have no payload - only the thunks are having a payload there) you should see, that we need to define the parameters of the action (`HandleChangeParamsType`). And the action itself, which is a little bit long due to the fact, that I'm type guarding the possible form fields.
+
+```ts
+export type HandleChangeParamsType = {
+  name: 'position' | 'company' | 'location' | 'status' | 'mode';
+  value: string | JobStatus | JobMode;
+};
+
+export const handleChange = createAction<
+  HandleChangeParamsType,
+  'job/handleChange'
+>('job/handleChange');
+
+const jobSlice = createSlice({
+  name: 'job',
+  initialState,
+  reducers: {
+    handleChange: (
+      state,
+      {
+        payload: { name, value },
+      }: {
+        payload: HandleChangeParamsType;
+      }
+    ) => {
+      //state.job = {...state.job, [name]: value};
+      if (name === 'position' || name === 'company' || name === 'location') {
+        state.job[name] = value as string;
+      } else if (name === 'status') {
+        state.job[name] = value as JobStatus;
+      } else if (name === 'mode') {
+        state.job[name] = value as JobMode;
+      }
+    },
+  },
+});
+```
+
+# commit CustomFormField understands an optional onChangeCapture Prop

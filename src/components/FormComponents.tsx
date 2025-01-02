@@ -25,6 +25,7 @@ type CustomFormFieldProps = {
   control: any;
   type: 'text' | 'email' | 'password';
   className?: string;
+  onChangeCapture?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 export function CustomFormField({
@@ -33,7 +34,11 @@ export function CustomFormField({
   label,
   control,
   className = '',
+  onChangeCapture,
 }: CustomFormFieldProps) {
+  const handleChangeCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChangeCapture?.(e);
+  };
   return (
     <FormField
       control={control}
@@ -42,7 +47,18 @@ export function CustomFormField({
         <FormItem>
           <FormLabel className='capitalize'>{label || name}</FormLabel>
           <FormControl>
-            <Input {...field} type={type} className={className} />
+            {onChangeCapture ? (
+              <Input
+                {...field}
+                type={type}
+                className={className}
+                onChangeCapture={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleChangeCapture(e)
+                }
+              />
+            ) : (
+              <Input {...field} type={type} className={className} />
+            )}
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -58,6 +74,7 @@ type CustomFormSelectProps = {
   control: any;
   items: string[];
   labelText?: string;
+  className?: string;
 };
 
 export function CustomFormSelect({
@@ -65,6 +82,7 @@ export function CustomFormSelect({
   control,
   items,
   labelText,
+  className = '',
 }: CustomFormSelectProps) {
   return (
     <FormField
@@ -79,10 +97,10 @@ export function CustomFormSelect({
                 <SelectValue />
               </SelectTrigger>
             </FormControl>
-            <SelectContent>
+            <SelectContent className={className}>
               {items.map((item) => {
                 return (
-                  <SelectItem key={item} value={item}>
+                  <SelectItem key={item} value={item} className={className}>
                     {item}
                   </SelectItem>
                 );

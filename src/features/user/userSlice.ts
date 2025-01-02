@@ -50,6 +50,7 @@ export const registerUser = createAsyncThunk(
     }
   }
 );
+
 export const loginUser = createAsyncThunk(
   'user/loginUser',
   async (user: User, thunkAPI) => {
