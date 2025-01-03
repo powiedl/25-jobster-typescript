@@ -67,6 +67,7 @@ export enum JobMode {
 }
 
 export type Job = {
+  _id?: string;
   position: string;
   company: string;
   location: string;
