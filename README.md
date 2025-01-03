@@ -743,7 +743,7 @@ And finally I've defined a proper type for the handleChange action in the jobSli
 
 ```ts
 export type HandleChangeParamsType = {
-  name: 'position' | 'company' | 'location' | 'status' | 'mode';
+  name: 'position' | 'company' | 'jobLocation' | 'status' | 'jobType';
   value: string | JobStatus | JobMode;
 };
 
@@ -765,11 +765,11 @@ const jobSlice = createSlice({
       }
     ) => {
       //state.job = {...state.job, [name]: value};
-      if (name === 'position' || name === 'company' || name === 'location') {
+      if (name === 'position' || name === 'company' || name === 'jobLocation') {
         state.job[name] = value as string;
       } else if (name === 'status') {
         state.job[name] = value as JobStatus;
-      } else if (name === 'mode') {
+      } else if (name === 'jobType') {
         state.job[name] = value as JobMode;
       }
     },
@@ -815,7 +815,21 @@ As I don't like the approach of having the AddJob form inside the Add Jobe page 
 
 ## Little update for the Job type
 
-As the data is stored in MongoDB and MongoDB uses \_id as field name for the primary key we have to add an optional property \_id to the Job (so we can store the result from the database in this type).
+As the data is stored in MongoDB and MongoDB uses \_id as field name for the primary key we have to add an optional property \_id to the Job (so we can store the result from the database in this type) - and also \_\_v and createdAt and updatedAt (all as optional properties).
+
+```ts
+export type Job = {
+  _id?: string;
+  _v?: number;
+  createdAt?: string; // the API returns a string in the ISO format (YYYY-MM-DDThh:mm:ss.zzzZ)
+  updatedAt?: string; // the API returns a string in the ISO format (YYYY-MM-DDThh:mm:ss.zzzZ)
+  position: string;
+  company: string;
+  jobLocation: string;
+  status: JobStatus;
+  jobType: JobType;
+};
+```
 
 ## Typing the response of the GET /jobs
 
@@ -841,3 +855,17 @@ export const getAllJobs = createAsyncThunk(
 The rest of the AsyncThunk (catch (error)) stays the same. And maybe you can (or should) also type createAsycnThunk itself (but the documentation was "too heavy" for me, so I decided to go little steps and start with typing the Api response - which is also more important in my opinion, because with this data you work in your application).
 
 ##### commit get the jobs from the api
+
+## Job component
+
+In the Job component we use two more shadcn/ui components, the Card, the Badge and the Separator. So we need to install them first:
+
+```sh
+npx shadcn@latest add card badge separator
+```
+
+The rest is pretty straight forward. The component I've build is a mixture of the component John builds in this part and the one we built in the NextJS Jobify project.
+
+When fetching the data from the API I realized I've messed up the data (I went with location and mode, but the API expects jobLocation and jobType). So I had to refactor the whole App to the correct names. This was less work than I thought it would be - thanks to Typescript and VSCode (which starts to throw red lines and squares at you as soon as you change the definition of the job Type). But in some places I still have the names as strings "without a meaning" and (eg the names of the fields in the Add/Edit job form - I'm sure with more Typescript I can also get these safely typed, but for now I'm good to go).
+
+##### commit delete Job finished

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit';
 import { type AxiosError } from 'axios';
 import { ApiJobsType, customFetch } from '@/utils/axios';
-import { Job, JobStatus, JobMode } from '@/utils/types';
+import { Job, JobStatus, JobType } from '@/utils/types';
 import { getUserFromLocalStorage } from '@/utils/localStorage';
 import { RootState } from '@/store';
 import { logoutUser } from '../user/userSlice';
@@ -20,7 +20,7 @@ enum All {
 type FiltersStateType = {
   search: string;
   searchStatus: JobStatus | All;
-  searchType: JobMode | All;
+  searchType: JobType | All;
   sort: FilterSortType;
 };
 
@@ -91,10 +91,24 @@ export const getAllJobs = createAsyncThunk(
   }
 );
 
+export const showLoading = createAction<void, 'allJobs/showLoading'>(
+  'allJobs/showLoading'
+);
+export const hideLoading = createAction<void, 'allJobs/hideLoading'>(
+  'allJobs/hideLoading'
+);
+
 const allJobsSlice = createSlice({
   name: 'allJobs',
   initialState,
-  reducers: {},
+  reducers: {
+    showLoading: (state) => {
+      state.isLoading = true;
+    },
+    hideLoading: (state) => {
+      state.isLoading = false;
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(getAllJobs.pending, (state) => {
       state.isLoading = true;

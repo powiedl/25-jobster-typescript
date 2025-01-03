@@ -59,7 +59,7 @@ export enum JobStatus {
   Declined = 'declined',
 }
 
-export enum JobMode {
+export enum JobType {
   FullTime = 'full-time',
   PartTime = 'part-time',
   Internship = 'internship',
@@ -68,19 +68,22 @@ export enum JobMode {
 
 export type Job = {
   _id?: string;
+  _v?: number;
+  createdAt?: string; // the API returns a string in the ISO format (YYYY-MM-DDThh:mm:ss.zzzZ)
+  updatedAt?: string; // the API returns a string in the ISO format (YYYY-MM-DDThh:mm:ss.zzzZ)
   position: string;
   company: string;
-  location: string;
+  jobLocation: string;
   status: JobStatus;
-  mode: JobMode;
+  jobType: JobType;
 };
 
 export const jobSchema = z.object({
   position: z.string().min(2, 'name must be at least 2 characters.'),
   company: z.string().min(2, 'company must be at least 2 characters.'),
-  location: z.string().min(2, 'location must be at least 2 characters.'),
+  jobLocation: z.string().min(2, 'location must be at least 2 characters.'),
   status: z.nativeEnum(JobStatus),
-  mode: z.nativeEnum(JobMode),
+  jobType: z.nativeEnum(JobType),
 });
 
 export type jobSchemaType = z.infer<typeof jobSchema>;
@@ -88,8 +91,8 @@ export type jobSchemaType = z.infer<typeof jobSchema>;
 export type JobFormType = {
   position: string;
   company: string;
-  location: string;
+  jobLocation: string;
   status: JobStatus;
-  mode: JobMode;
+  jobType: JobType;
 };
 // #endregion

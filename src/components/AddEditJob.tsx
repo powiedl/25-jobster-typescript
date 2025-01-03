@@ -7,7 +7,7 @@ import { toast } from '@/hooks/use-toast';
 import {
   Job,
   JobFormType,
-  JobMode,
+  JobType,
   jobSchema,
   jobSchemaType,
   JobStatus,
@@ -31,9 +31,9 @@ const AddEditJob = () => {
   const initialState: JobFormType = {
     position: '',
     company: '',
-    location: '',
+    jobLocation: '',
     status: JobStatus.Pending,
-    mode: JobMode.FullTime,
+    jobType: JobType.FullTime,
   };
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -55,7 +55,7 @@ const AddEditJob = () => {
   const handleClear = () => {
     dispatch(clearValues());
     form.setValue('status', initialState.status);
-    form.setValue('mode', initialState.mode);
+    form.setValue('jobType', initialState.jobType);
     form.reset();
   };
   const saveInStore = (name: string, value: string) => {
@@ -100,7 +100,7 @@ const AddEditJob = () => {
             onChangeCapture={formHandleChangeCapture}
           />
           <CustomFormField
-            name='location'
+            name='jobLocation'
             type='text'
             control={form.control}
             className='bg-muted'
@@ -115,10 +115,10 @@ const AddEditJob = () => {
             className='form-control bg-muted'
           />
           <CustomFormSelect
-            name='mode'
+            name='jobType'
             control={form.control}
-            labelText='job mode'
-            items={Object.values(JobMode)}
+            labelText='job type'
+            items={Object.values(JobType)}
             onValueChange={saveInStore}
             className='form-control bg-muted'
           />
