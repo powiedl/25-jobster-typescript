@@ -131,6 +131,18 @@ const RegisterPage = () => {
           <Button type='submit' disabled={isLoading}>
             {!isLoading ? 'Submit' : 'Submitting...'}
           </Button>
+          <Button
+            className='bg-yellow-500 hover:bg-yellow-600'
+            type='button'
+            disabled={isLoading}
+            onClick={() =>
+              dispatch(
+                loginUser({ email: 'testUser@test.com', password: 'secret' })
+              )
+            }
+          >
+            {!isLoading ? 'Demo User' : 'Submitting...'}
+          </Button>
           {stateIsMember ? (
             <p>
               Not a member yet?{' '}

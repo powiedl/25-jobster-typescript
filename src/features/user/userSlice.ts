@@ -6,7 +6,6 @@ import {
   addUserToLocalStorage,
   removeUserFromLocalStorage,
 } from '@/utils/localStorage';
-import { RootState } from '@/store';
 
 export type User = {
   name?: string;
@@ -70,13 +69,7 @@ export const updateUser = createAsyncThunk(
   'user/updateUser',
   async (user: User, thunkAPI) => {
     try {
-      const response = await customFetch.patch('/auth/updateUser', user, {
-        headers: {
-          authorization: `Bearer ${
-            (thunkAPI.getState() as RootState).user.user?.token
-          }`,
-        },
-      });
+      const response = await customFetch.patch('/auth/updateUser', user);
       return response.data;
     } catch (error: AxiosError | Error | unknown) {
       // update the error state in the store (error.response.data.msg) ...

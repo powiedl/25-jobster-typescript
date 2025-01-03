@@ -1,11 +1,6 @@
 import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit';
-import { type AxiosError } from 'axios';
-import { customFetch } from '@/utils/axios';
 import { Job, JobStatus, JobType } from '@/utils/types';
-import { getUserFromLocalStorage } from '@/utils/localStorage';
-import { RootState } from '@/store';
-import { logoutUser } from '../user/userSlice';
-import { showLoading, hideLoading, getAllJobs } from '../allJobs/allJobsSlice';
+import { createJobThunk, editJobThunk, deleteJobThunk } from './jobThunk';
 
 interface JobState {
   isLoading: boolean;
@@ -33,87 +28,9 @@ const initialState: JobState = {
   editJobId: null,
 };
 
-export const createJob = createAsyncThunk(
-  'job/createJob',
-  async (job: Job, thunkAPI) => {
-    try {
-      const response = await customFetch.post('/jobs', job, {
-        headers: {
-          authorization: `Bearer ${
-            (thunkAPI.getState() as RootState).user.user?.token
-          }`,
-        },
-      });
-      return response.data;
-    } catch (error: AxiosError | Error | unknown) {
-      if (error?.response?.status === 401) {
-        console.log('createJob, ERROR', error);
-        thunkAPI.dispatch(logoutUser());
-        return thunkAPI.rejectWithValue('Unauthorized! Logging out ...');
-      } else {
-        return thunkAPI.rejectWithValue(
-          error?.response?.data?.msg || 'Something went wrong'
-        );
-      }
-    }
-  }
-);
-export const editJob = createAsyncThunk(
-  'job/editJob',
-  async ({ jobId, job }: { jobId: string; job: Job }, thunkAPI) => {
-    try {
-      const response = await customFetch.patch<Job>(`/jobs/${jobId}`, job, {
-        headers: {
-          authorization: `Bearer ${
-            (thunkAPI.getState() as RootState).user.user?.token
-          }`,
-        },
-      });
-      thunkAPI.dispatch(clearValues());
-      return response.data;
-    } catch (error: AxiosError | Error | unknown) {
-      console.log('editJob, ERROR', error);
-      if (error?.response?.status === 401) {
-        thunkAPI.dispatch(logoutUser());
-        return thunkAPI.rejectWithValue('Unauthorized! Logging out ...');
-      } else {
-        return thunkAPI.rejectWithValue(
-          error?.response?.data?.msg || 'Something went wrong'
-        );
-      }
-    }
-  }
-);
-
-export const deleteJob = createAsyncThunk(
-  'job/deleteJob',
-  async (jobId: string, thunkAPI) => {
-    thunkAPI.dispatch(showLoading());
-    try {
-      const response = await customFetch.delete(`/jobs/${jobId}`, {
-        headers: {
-          authorization: `Bearer ${
-            (thunkAPI.getState() as RootState).user.user?.token
-          }`,
-        },
-      });
-      thunkAPI.dispatch(getAllJobs());
-      console.log('deleteJob, thunk, response.data=', response.data);
-      return response.data.msg;
-    } catch (error: AxiosError | Error | unknown) {
-      console.log('deleteJob, ERROR', error);
-      thunkAPI.dispatch(hideLoading());
-      if (error?.response?.status === 401) {
-        thunkAPI.dispatch(logoutUser());
-        return thunkAPI.rejectWithValue('Unauthorized! Logging out ...');
-      } else {
-        return thunkAPI.rejectWithValue(
-          error?.response?.data?.msg || 'Something went wrong'
-        );
-      }
-    }
-  }
-);
+export const createJob = createAsyncThunk('job/createJob', createJobThunk);
+export const editJob = createAsyncThunk('job/editJob', editJobThunk);
+export const deleteJob = createAsyncThunk('job/deleteJob', deleteJobThunk);
 
 export type HandleChangeParamsType = {
   name: 'position' | 'company' | 'jobLocation' | 'status' | 'jobType';

@@ -1,10 +1,7 @@
 import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit';
-import { type AxiosError } from 'axios';
-import { ApiJobsType, customFetch } from '@/utils/axios';
 import { Job, JobStatus, JobType } from '@/utils/types';
-import { getUserFromLocalStorage } from '@/utils/localStorage';
-import { RootState } from '@/store';
-import { logoutUser } from '../user/userSlice';
+import { getAllJobsThunk, showStatsThunk } from './allJobsThunk';
+import { ApiJobStatsType, ApiJobsType } from '@/utils/axios';
 
 enum FilterSortType {
   latest = 'latest',
@@ -32,13 +29,13 @@ type allJobsStateType = {
   totalJobs: number;
   numOfPages: number;
   page: number;
+  filters: FiltersStateType;
   stats: {
     pending: number;
     interview: number;
     declined: number;
   };
-  monthlyApplications: number[];
-  filters: FiltersStateType;
+  monthlyApplications: { date: string; count: number }[];
 };
 
 const initialState: allJobsStateType = {
@@ -63,32 +60,14 @@ const initialState: allJobsStateType = {
   },
 };
 
-export const getAllJobs = createAsyncThunk(
+export const getAllJobs = createAsyncThunk<ApiJobsType, void>(
   'allJobs/getAllJobs',
-  async (_, thunkAPI) => {
-    let url = '/jobs';
-    url = '/jobs'; // to make typescript happy ... we will modify it later on
-    try {
-      const response = await customFetch.get<ApiJobsType>(url, {
-        headers: {
-          authorization: `Bearer ${
-            (thunkAPI.getState() as RootState).user.user?.token
-          }`,
-        },
-      });
-      return response.data;
-    } catch (error: AxiosError | Error | unknown) {
-      // update the error state in the store (error.response.data.msg) ...
-      if (error?.response?.status === 401) {
-        thunkAPI.dispatch(logoutUser());
-        return thunkAPI.rejectWithValue('Unauthorized! Logging out ...');
-      } else {
-        return thunkAPI.rejectWithValue(
-          error?.response?.data?.msg || 'Something went wrong'
-        );
-      }
-    }
-  }
+  getAllJobsThunk
+);
+
+export const showStats = createAsyncThunk<ApiJobStatsType, void>(
+  'allJobs/showStats',
+  showStatsThunk
 );
 
 export const showLoading = createAction<void, 'allJobs/showLoading'>(
@@ -116,6 +95,8 @@ const allJobsSlice = createSlice({
     });
     builder.addCase(getAllJobs.fulfilled, (state, { payload }) => {
       const { jobs, totalJobs, numOfPages } = payload;
+      // console.log('getAllJobs.fulfilled, payload=', payload);
+      // console.log('getAllJobs.fulfilled, jobs=', jobs);
       state.isLoading = false;
       state.error = null;
       state.success = null;
@@ -124,6 +105,21 @@ const allJobsSlice = createSlice({
       state.numOfPages = numOfPages;
     });
     builder.addCase(getAllJobs.rejected, (state, { payload }) => {
+      state.isLoading = false;
+      state.error = payload as string;
+      state.success = null;
+    });
+    builder.addCase(showStats.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+      state.success = null;
+    });
+    builder.addCase(showStats.fulfilled, (state, { payload }) => {
+      state.isLoading = false;
+      state.stats = payload.defaultStats;
+      state.monthlyApplications = payload.monthlyApplications;
+    });
+    builder.addCase(showStats.rejected, (state, { payload }) => {
       state.isLoading = false;
       state.error = payload as string;
       state.success = null;

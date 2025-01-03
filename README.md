@@ -875,3 +875,75 @@ When fetching the data from the API I realized I've messed up the data (I went w
 This wasn't difficult at all, I only messed up the position of the editJobId once - which led to a nice bug hunting ...
 
 ##### commit Edit Job
+
+## Refactor jobSlice.ts
+
+For a refactor we moved the AsyncThunk function into a separate file. The only thing we need in jobSlice left (regarding the AsynThunks) is the definition of the action itself. And we also can greatly reduce the imports in jobSlice.ts. See the example of the createJob:
+
+**jobSlice.ts:**
+
+```ts
+import { createJobThunk, editJobThunk, deleteJobThunk } from './jobThunk';
+...
+export const createJob = createAsyncThunk('job/createJob', createJobThunk);
+```
+
+**jobThunk.ts:**
+
+```ts
+// I was not able to figure out what type to use for thunkAPI
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const createJobThunk = async (job: Job, thunkAPI: any) => {
+  try {
+    const response = await customFetch.post('/jobs', job, {
+      headers: {
+        authorization: `Bearer ${
+          (thunkAPI.getState() as RootState).user.user?.token
+        }`,
+      },
+    });
+    return response.data;
+  } catch (error: AxiosError | Error | unknown) {
+    if (error?.response?.status === 401) {
+      console.log('createJob, ERROR', error);
+      thunkAPI.dispatch(logoutUser());
+      return thunkAPI.rejectWithValue('Unauthorized! Logging out ...');
+    } else {
+      return thunkAPI.rejectWithValue(
+        error?.response?.data?.msg || 'Something went wrong'
+      );
+    }
+  }
+};
+```
+
+And we could make a helper function for the header to (it is always the same) - and also for the catch block (I guess). What John did in the next video (remove authorization header from the axios calls and us an axios Interceptor function for it).
+
+## Typing of the createAsyncThunk
+
+The createAsyncThunk is a generic function with two type parameters. The first one is the type of the result of the thunk function (which itself is the second parameter of the createAsyncThunk function). And the second one is - if I understood it correct - is the type of the parameter of the thunk function. In my opinion these two type parameters are in the wrong order - but it is, what it is ...
+
+Here is an example for the allJobs/showStats action:
+
+```ts
+// the definition of the showStats action. The thunk doesn't expect any parameters and it returns a ApiJobStatsType (which I defined in types/axios.ts)
+// export const showStats = createAsyncThunk<ApiJobStatsType, void>(
+  'allJobs/showStats',
+  showStatsThunk
+);
+
+// the thunk itself:
+export const showStatsThunk = async (_, thunkAPI: any) => {
+  try {
+    const response = await customFetch.get<ApiJobStatsType>('/jobs/stats');
+    console.log('showStatsThunk, response.data=', response.data);
+    return response.data;
+  } catch (error: AxiosError | Error | unknown) {
+  ...
+  }
+);
+```
+
+What amazes me is the fact that it has two parameters (\_ and thunkAPI). The first parameter should be ignored, but the second thunkAPI is used (in the error handling, which I've removed from here because I want to focus on the typing stuff).
+
+##### commit Stats backend and Stats Container
