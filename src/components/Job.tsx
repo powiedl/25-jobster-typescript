@@ -30,6 +30,20 @@ const Job = ({
 
   const createdAtString =
     (createdAt && new Date(createdAt).toLocaleDateString('de-DE', {})) || '???';
+  let color: string;
+  switch (status) {
+    case 'pending':
+      color = 'yellow';
+      break;
+    case 'interview':
+      color = 'green';
+      break;
+    case 'declined':
+      color = 'red';
+      break;
+    default:
+      color = 'blue';
+  }
   return (
     <Card className='bg-white'>
       <CardHeader className='flex flex-row relative'>
@@ -50,8 +64,8 @@ const Job = ({
         <JobInfo icon={<Briefcase />} text={jobType} />
         <JobInfo icon={<MapPin />} text={jobLocation} />
         <JobInfo icon={<CalendarDays />} text={createdAtString} />
-        <Badge className='w-fit justify-center py-1 px-4'>
-          <JobInfo icon={<RadioTower className='w-4 h-4' />} text={status} />
+        <Badge className={`w-fit justify-center py-1 px-4 bg-${color}-100`}>
+          <JobInfo icon={<RadioTower className='w-4 h-4 t' />} text={status} />
         </Badge>
       </CardContent>
       <CardFooter className='flex gap-4'>

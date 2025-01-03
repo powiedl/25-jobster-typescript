@@ -1,3 +1,4 @@
+import ChartsContainer from '@/components/ChartsContainer';
 import Loading from '@/components/Loading';
 import StatsContainer from '@/components/StatsContainer';
 import { showStats } from '@/features/allJobs/allJobsSlice';
@@ -14,8 +15,9 @@ const StatsPage = () => {
   }, []);
   if (isLoading) return <Loading />;
   return (
-    <div>
+    <div className='flex flex-col gap-y-8'>
       <StatsContainer stats={stats} />
+      <ChartsContainer monthlyApplications={monthlyApplications} className='' />
     </div>
   );
 };

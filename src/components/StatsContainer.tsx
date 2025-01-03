@@ -1,4 +1,5 @@
 import { ApiJobStatsType } from '@/utils/axios';
+import { FaSuitcaseRolling, FaCalendarCheck, FaBug } from 'react-icons/fa';
 
 const StatsContainer = ({
   stats,
@@ -13,18 +14,50 @@ const StatsContainer = ({
 
   return (
     <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'>
-      <StatsCard title='pending jobs' value={stats.pending || 0} />
-      <StatsCard title='in progress jobs' value={stats.interview || 0} />
-      <StatsCard title='completed jobs' value={stats.declined || 0} />
+      <StatsCard
+        title='pending Applications'
+        value={stats.pending || 0}
+        icon={<FaSuitcaseRolling />}
+        bgColor='bg-yellow-100'
+      />
+      <StatsCard
+        title='interviews scheduled'
+        value={stats.interview || 0}
+        icon={<FaCalendarCheck />}
+        bgColor='bg-green-100'
+      />
+      <StatsCard
+        title='jobs declined'
+        value={stats.declined || 0}
+        icon={<FaBug />}
+        bgColor='bg-red-100'
+      />
     </div>
   );
 };
 
-const StatsCard = ({ title, value }: { title: string; value: number }) => {
+const StatsCard = ({
+  title,
+  value,
+  icon,
+  bgColor,
+}: {
+  title: string;
+  value: number;
+  icon: React.ReactNode;
+  bgColor?: string;
+}) => {
   return (
-    <div className='flex bg-white justify-between items-center p-6 rounded-lg'>
-      <span className='capitalize text-lg font-semibold'>{title}</span>
-      <span className='text-primary text-2xl font-bold'>{value}</span>
+    <div
+      className={`flex bg-white justify-between items-center p-6 rounded-lg border-b-4 border-b-black ${bgColor}`}
+    >
+      <div className='flex flex-col gap-1'>
+        <span className='text-5xl'>{icon}</span>
+        <span className='capitalize text-md tracking-wider font-light'>
+          {title}
+        </span>
+      </div>
+      <span className='text-primary text-3xl font-bold'>{value}</span>
     </div>
   );
 };

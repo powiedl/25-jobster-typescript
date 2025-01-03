@@ -947,3 +947,9 @@ export const showStatsThunk = async (_, thunkAPI: any) => {
 What amazes me is the fact that it has two parameters (\_ and thunkAPI). The first parameter should be ignored, but the second thunkAPI is used (in the error handling, which I've removed from here because I want to focus on the typing stuff).
 
 ##### commit Stats backend and Stats Container
+
+## Charts Container
+
+In this version of the program John creates two types of Charts - a bar chart and an area chart. The user can toggle between them. This is controlled by a useState (barChart, which is of type boolean). I've created two "child components" (one for each type of the chart) and depending on the barChart state I render one or the other. And the state is flipped with a "button" (it looks more like a link).
+
+##### commit Charts - Stats finished
