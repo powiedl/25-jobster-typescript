@@ -83,7 +83,7 @@ I've answered the questions as follows:
 - Which color would you like to use as the base color? **Zinc**
 - Would you like to use CSS variables for theming? **yes**
 
-# commit: shadcn/ui installed
+##### commit: shadcn/ui installed
 
 ## Add Button from shadcn/ui
 
@@ -99,7 +99,7 @@ I go with React Router 7 (which is the latest at the time of writing this app) a
 npm install react-router-dom@7
 ```
 
-# commit: react router 7 and typo in README.md fixed
+##### commit: react router 7 and typo in README.md fixed
 
 ## Configure your project for React Router Type Safety
 
@@ -133,7 +133,7 @@ You can add this line to your package.json (scripts section) - but this is not a
     "typecheck": "react-router typegen && tsc"
 ```
 
-# commit: basic router setup
+##### commit: basic router setup
 
 # shadcn/ui Form, Input and Select installation (used for the forms)
 
@@ -393,7 +393,7 @@ const RegisterPage = () => {
 };
 ```
 
-# commit: Register / Sign In form
+##### commit: Register / Sign In form
 
 # Toast component from shadcn/ui
 
@@ -454,7 +454,7 @@ export const useAppSelector = useSelector.withTypes<RootState>();
 
 And e. g. in the register.tsx import useAppSelector and use this one (instead of useSelector) and useAppDispatch (instead of useDispatch).
 
-# commit: basic Redux Toolkit setup
+##### commit: basic Redux Toolkit setup
 
 ## "Action" user/registerUser
 
@@ -549,15 +549,15 @@ Some points to mention:
 
 - The type of the error in the try/catch in the async actions seems not to be completely correct. TS infers the error as unknown (in my opinion it should be AxiosError). And AxiosError in the import is marked as "unused".
 
-# commit register and login implemented
+##### commit register and login implemented
 
-# commit save user in localStorage
+##### commit save user in localStorage
 
 This part has no specialities for Typescript ... I do this commit only to keep things clean.
 
-# commit add all the routes and start setup of user interface, Navbar optical complete
+##### commit add all the routes and start setup of user interface, Navbar optical complete
 
-# commit Navbar complete
+##### commit Navbar complete
 
 ## Small Sidebar
 
@@ -586,11 +586,11 @@ And one big gotcha - at the moment is - it will always try to display the dialog
 
 As we want to close the modal not only, if we click the close button, but also if we select a link to go to this page, we cannot use `<DialogClose>`, because this would lead to an infinite render. But we don't need it. We just place an ordinary Button and set the onClick to `()=>dispatch(toggleSidebar())`. And the same we do on our NavLinks.
 
-# commit SmallSidebar completed (?)
+##### commit SmallSidebar completed (?)
 
 Inside the NavLinks component we have to use a little trick to get it working. The onClick property of the NavLink components must look like this: `onClick={() => toggleSidebar && toggleSidebar()}`. But I think that will come in handy when we work on the BigSidebar.
 
-# commit NavLinks component
+##### commit NavLinks component
 
 ## BigSidebar - and everything needs to change ...
 
@@ -624,11 +624,11 @@ if (width <= 1024) return null;
 
 Right now I have the check of isSidebarOpen still in both Sidebars. I will now make a commit and then remove this check, as I think it is not needed anymore.
 
-# commit sidebars finished
+##### commit sidebars finished
 
 I've not been completely right. In the BigSidebar we neither need the isSidebarOpen nor the check for the width, but in the SmallSidebar we still need both. The check for the width for an early return (otherwise the dialog would not been shown, if isSidebarOpen is true, but the grey background would still be there). And we use the isSidebarOpen in the Dialog to control the open property.
 
-# commit sidebars really finished
+##### commit sidebars really finished
 
 A little sidenote: You can achieve an open sidebar on the large screen by default with this line of code in the initialState of the userSlice: `isSidebarOpen: window.innerWidth > 1024 ? true : false,` (instead of hardcoding it to false)
 
@@ -656,11 +656,11 @@ Inside the updateUser code (in the userSlice) you should type the thunkAPI.getSt
 
 At the moment the Submit Button is not nicely aligned and I can't figure out how to align it nicely, so (as my main focus is not styling the UI right now) I will go with it. Later is now - with a little help of my friend VS Code free tier Copilot - it's as simple as add 'self-end' to the button ...
 
-# commit Profile page
+##### commit Profile page
 
-# commit Button position and order of the input fields in Profile page changed
+##### commit Button position and order of the input fields in Profile page changed
 
-# commit logout if API request returns 401
+##### commit logout if API request returns 401
 
 ## refactor thunks
 
@@ -777,7 +777,7 @@ const jobSlice = createSlice({
 });
 ```
 
-# commit CustomFormField understands an optional onChangeCapture Prop
+##### commit CustomFormField understands an optional onChangeCapture Prop
 
 ## CustomFormSelect - save changes to store
 
@@ -793,7 +793,7 @@ This handler calls this function (if it is present) with the name and the value 
 
 In the AddJob component I've added a helper function `saveInStore(name:string,value:string)` which I pass down to the CustomFormSelect as onValueChange. Inside of this function I call the dispatch(job/handleChange). And I've refactored the `formHandleChangeCapture` to also call this function with e.target.name and e.target.value.
 
-# commit CustomFormselect - save changes to store
+##### commit CustomFormselect - save changes to store
 
 ## Clear the form
 
@@ -803,4 +803,4 @@ If you use shadcn/ui (and under the hood react-hook-form) even resetting the for
 
 This is quite straight forward again. "Copy/paste" from the userSlice.
 
-# commit send the Job to the server
+##### commit send the Job to the server
