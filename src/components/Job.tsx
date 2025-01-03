@@ -15,7 +15,7 @@ import { MapPin, Briefcase, CalendarDays, RadioTower } from 'lucide-react';
 import { Badge } from './ui/badge';
 import JobInfo from './JobInfo';
 import { Link } from 'react-router-dom';
-import { deleteJob } from '@/features/job/jobSlice';
+import { deleteJob, setEditJob } from '@/features/job/jobSlice';
 
 const Job = ({
   _id,
@@ -55,14 +55,29 @@ const Job = ({
         </Badge>
       </CardContent>
       <CardFooter className='flex gap-4'>
-        <Button
-          asChild
-          size='sm'
-          onClick={() => console.log(`edit job: ${_id} `)}
-          className='capitalize'
-        >
-          <Link to='/add-job'>edit</Link>
-        </Button>
+        {_id && (
+          <Button
+            asChild
+            size='sm'
+            onClick={() =>
+              dispatch(
+                setEditJob({
+                  editJobId: _id,
+                  job: {
+                    position,
+                    company,
+                    jobLocation,
+                    status,
+                    jobType,
+                  },
+                })
+              )
+            }
+            className='capitalize'
+          >
+            <Link to='/add-job'>edit</Link>
+          </Button>
+        )}
         <Button
           size='sm'
           className='bg-red-500 capitalize hover:bg-red-400'

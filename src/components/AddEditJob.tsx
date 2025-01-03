@@ -19,6 +19,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   clearValues,
   createJob,
+  editJob,
   handleChange,
   type HandleChangeParamsType,
 } from '@/features/job/jobSlice';
@@ -26,14 +27,15 @@ import {
 const AddEditJob = () => {
   const { job, isLoading, error, success, isEditing, editJobId } =
     useAppSelector((store) => store.job);
+
   const { user } = useAppSelector((store) => store.user);
 
   const initialState: JobFormType = {
-    position: '',
-    company: '',
-    jobLocation: '',
-    status: JobStatus.Pending,
-    jobType: JobType.FullTime,
+    position: (isEditing ? job?.position : '') || '',
+    company: (isEditing ? job?.company : '') || '',
+    jobLocation: (isEditing ? job?.jobLocation : '') || '',
+    status: (isEditing ? job?.status : JobStatus.Pending) || JobStatus.Pending,
+    jobType: (isEditing ? job?.jobType : JobType.FullTime) || JobType.FullTime,
   };
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -45,7 +47,11 @@ const AddEditJob = () => {
 
   const handleSubmit = (values: jobSchemaType) => {
     console.log('Submitting ...', values);
-    dispatch(createJob(values as Job));
+    if (isEditing) {
+      console.log('editJobId', editJobId);
+      dispatch(editJob({ jobId: editJobId!, job: values as Job }));
+      navigate('/all-jobs');
+    } else dispatch(createJob(values as Job));
   };
 
   const formHandleChangeCapture = (e: React.ChangeEvent<HTMLInputElement>) => {

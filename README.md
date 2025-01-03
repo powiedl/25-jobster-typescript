@@ -869,3 +869,9 @@ The rest is pretty straight forward. The component I've build is a mixture of th
 When fetching the data from the API I realized I've messed up the data (I went with location and mode, but the API expects jobLocation and jobType). So I had to refactor the whole App to the correct names. This was less work than I thought it would be - thanks to Typescript and VSCode (which starts to throw red lines and squares at you as soon as you change the definition of the job Type). But in some places I still have the names as strings "without a meaning" and (eg the names of the fields in the Add/Edit job form - I'm sure with more Typescript I can also get these safely typed, but for now I'm good to go).
 
 ##### commit delete Job finished
+
+## Edit Job
+
+This wasn't difficult at all, I only messed up the position of the editJobId once - which led to a nice bug hunting ...
+
+##### commit Edit Job

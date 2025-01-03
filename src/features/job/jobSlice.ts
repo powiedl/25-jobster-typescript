@@ -6,7 +6,6 @@ import { getUserFromLocalStorage } from '@/utils/localStorage';
 import { RootState } from '@/store';
 import { logoutUser } from '../user/userSlice';
 import { showLoading, hideLoading, getAllJobs } from '../allJobs/allJobsSlice';
-import { get } from 'http';
 
 interface JobState {
   isLoading: boolean;
@@ -48,6 +47,33 @@ export const createJob = createAsyncThunk(
       return response.data;
     } catch (error: AxiosError | Error | unknown) {
       if (error?.response?.status === 401) {
+        console.log('createJob, ERROR', error);
+        thunkAPI.dispatch(logoutUser());
+        return thunkAPI.rejectWithValue('Unauthorized! Logging out ...');
+      } else {
+        return thunkAPI.rejectWithValue(
+          error?.response?.data?.msg || 'Something went wrong'
+        );
+      }
+    }
+  }
+);
+export const editJob = createAsyncThunk(
+  'job/editJob',
+  async ({ jobId, job }: { jobId: string; job: Job }, thunkAPI) => {
+    try {
+      const response = await customFetch.patch<Job>(`/jobs/${jobId}`, job, {
+        headers: {
+          authorization: `Bearer ${
+            (thunkAPI.getState() as RootState).user.user?.token
+          }`,
+        },
+      });
+      thunkAPI.dispatch(clearValues());
+      return response.data;
+    } catch (error: AxiosError | Error | unknown) {
+      console.log('editJob, ERROR', error);
+      if (error?.response?.status === 401) {
         thunkAPI.dispatch(logoutUser());
         return thunkAPI.rejectWithValue('Unauthorized! Logging out ...');
       } else {
@@ -75,6 +101,7 @@ export const deleteJob = createAsyncThunk(
       console.log('deleteJob, thunk, response.data=', response.data);
       return response.data.msg;
     } catch (error: AxiosError | Error | unknown) {
+      console.log('deleteJob, ERROR', error);
       thunkAPI.dispatch(hideLoading());
       if (error?.response?.status === 401) {
         thunkAPI.dispatch(logoutUser());
@@ -93,6 +120,11 @@ export type HandleChangeParamsType = {
   value: string | JobStatus | JobType;
 };
 
+type SetEditJobParamsType = {
+  editJobId: string;
+  job: Job;
+};
+
 export const handleChange = createAction<
   HandleChangeParamsType,
   'job/handleChange'
@@ -104,6 +136,10 @@ export const clearValues = createAction<void, 'job/clearValues'>(
 export const clearMessages = createAction<void, 'job/clearMessages'>(
   'job/clearMessages'
 );
+export const setEditJob = createAction<SetEditJobParamsType, 'job/setEditJob'>(
+  'job/setEditJob'
+);
+
 const jobSlice = createSlice({
   name: 'job',
   initialState,
@@ -132,6 +168,17 @@ const jobSlice = createSlice({
       state.error = null;
       state.success = null;
     },
+    setEditJob: (state, { payload }: { payload: SetEditJobParamsType }) => {
+      console.log('setEditJob, payload=', payload);
+      const returnValue = {
+        ...state,
+        isEditing: true,
+        editJobId: payload.editJobId,
+      };
+      returnValue.job = payload.job;
+      return returnValue;
+      //return { ...state, editJobId: payload.editJobId, isEditing: true, job: { payload.job } };
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(createJob.pending, (state) => {
@@ -146,6 +193,22 @@ const jobSlice = createSlice({
       state.job = job;
     });
     builder.addCase(createJob.rejected, (state, { payload }) => {
+      state.isLoading = false;
+      state.error = payload as string;
+      state.success = null;
+    });
+    builder.addCase(editJob.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    });
+    builder.addCase(editJob.fulfilled, (state, { payload }) => {
+      const { job } = payload;
+      state.isLoading = false;
+      state.error = null;
+      state.success = `Successfully updated job: ${job.position}`;
+      state.job = job;
+    });
+    builder.addCase(editJob.rejected, (state, { payload }) => {
       state.isLoading = false;
       state.error = payload as string;
       state.success = null;
