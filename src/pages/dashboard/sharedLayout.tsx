@@ -14,7 +14,7 @@ const SharedLayout = () => {
       )}
       <div className='flex-1 flex flex-col'>
         <Navbar className='flex justify-between p-4' />
-        <main className='flex-grow bg-muted p-4'>
+        <main className='flex-grow bg-muted px-12 py-8'>
           <Outlet />
         </main>
       </div>

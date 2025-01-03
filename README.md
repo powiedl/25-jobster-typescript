@@ -804,3 +804,40 @@ If you use shadcn/ui (and under the hood react-hook-form) even resetting the for
 This is quite straight forward again. "Copy/paste" from the userSlice.
 
 ##### commit send the Job to the server
+
+## allJobs slice
+
+The FiltersState brings a little challenge, because of searchStatus (and searchMode). Basically the same values as for the status in the Job type are possible plus 'all'. And this plus is the "challenge", because you cannot extend an enum in Typescript. My workaround is to create an enum All (with just one element `all = 'all'`) and use a union type of JobStatus | All for it (similar for searchType).
+
+## AddJob - little refactor
+
+As I don't like the approach of having the AddJob form inside the Add Jobe page (and I wonder how John will come around this, when it gets to edit a job) I moved the whole Add Job page into a component AddEditJob (the complete ``<Form>..</Form>) and imported this component in the Add Job page (after removing all unneeded pieces from there this leads to a very short Add Job page).
+
+## Little update for the Job type
+
+As the data is stored in MongoDB and MongoDB uses \_id as field name for the primary key we have to add an optional property \_id to the Job (so we can store the result from the database in this type).
+
+## Typing the response of the GET /jobs
+
+Now I've realized, that I don't really make use of Typescript features for my API requests. I will change this from now on and maybe I'll also refactor the existing ones. Therefore I created a ApiJobsType interface (when to use types and when interfaces is also something I have no clear idea about yet and also how to name them) in the axios.ts. I think it is better placed in the axios.ts (than in the types.ts), because it relates to the API (which I consume with axios). So an even better name for axios.ts might have been api.ts.
+
+```ts
+export const getAllJobs = createAsyncThunk(
+  'allJobs/getAllJobs',
+  async (_, thunkAPI) => {
+    let url = '/jobs';
+    url = '/jobs'; // to make typescript happy ... we will modify it later on
+    try {
+      const response = await customFetch.get<ApiJobsType>(url, {
+        headers: {
+          authorization: `Bearer ${
+            (thunkAPI.getState() as RootState).user.user?.token
+          }`,
+        },
+      });
+      return response.data;
+```
+
+The rest of the AsyncThunk (catch (error)) stays the same. And maybe you can (or should) also type createAsycnThunk itself (but the documentation was "too heavy" for me, so I decided to go little steps and start with typing the Api response - which is also more important in my opinion, because with this data you work in your application).
+
+##### commit get the jobs from the api
