@@ -40,7 +40,7 @@ const StatsCard = ({
   title,
   value,
   icon,
-  bgColor,
+  bgColor = 'bg-white',
 }: {
   title: string;
   value: number;
@@ -49,7 +49,7 @@ const StatsCard = ({
 }) => {
   return (
     <div
-      className={`flex bg-white justify-between items-center p-6 rounded-lg border-b-4 border-b-black ${bgColor}`}
+      className={`flex justify-between items-center p-6 rounded-lg border-b-4 border-b-black ${bgColor}`}
     >
       <div className='flex flex-col gap-1'>
         <span className='text-5xl'>{icon}</span>

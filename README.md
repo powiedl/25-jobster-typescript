@@ -526,6 +526,8 @@ const userSlice = createSlice({
 }
 ```
 
+And remember a reducer does not need to return the new state, it can mutate the changing parts directly. But it can return a new state. If it does this returned state must be a complete state (if you miss one property in the return it will be deleted in the state!). In the given example we don't use this possibility, but later on we will use this.
+
 ## GUI - showing the toast
 
 In the GUI (register.tsx) I've added useEffect (I will setup a useEffect depending on success and error from the redux user state) and the clearMessages to the imports (inside the useEffect I will call this to clear the messages after I've showed them).
@@ -953,3 +955,86 @@ What amazes me is the fact that it has two parameters (\_ and thunkAPI). The fir
 In this version of the program John creates two types of Charts - a bar chart and an area chart. The user can toggle between them. This is controlled by a useState (barChart, which is of type boolean). I've created two "child components" (one for each type of the chart) and depending on the barChart state I render one or the other. And the state is flipped with a "button" (it looks more like a link).
 
 ##### commit Charts - Stats finished
+
+## Search
+
+### types.ts
+
+We define a zodSchema for the search form, although I think it is not a must have as we haveno real need to validate the data. But going this way does not have any negative impact and the "structure" of all forms remains the same. I came across a little issue with the validation logic for the dropdowns for job status and job type (because they add the 'all' option to the base type values). In a zod validation schema you can combine two or more enums to "one" by using the union method (which expects an array with the enums you want to join), so for the jobStatus the line is `searchStatus: z.union([z.nativeEnum(JobStatus), z.nativeEnum(All)]).optional(),`.
+
+## Pagination
+
+In the first run I thought I will use the pagination component of the shadcn/ui library, but after struggling around with it and found a way to use it (even if the styling is far from "nice") I realised (by continuing to watch Johns video), that we don't really want a pagination, just a "bunch" of buttons. The buttons will call a dispatch action, which only changes the page number to be fetched. This way we will not have to deal with building the filter URL "from scratch" each time we only change the page.
+
+During my try to get the shadcn/ui pagination component to get to work (or to "look good") I realised that it's styling capabilities are quite limited (or I didn't find the "key" for the styling). I will leave the README part regarding the shadcn/ui pagination component in a separate md file (for reference, maybe it will be useful later or for someone else).
+
+## Search
+
+In the getAllJobs thunk we construct the url (with the parameters to reflect the settings inside the search form in the All Jobs page). And we also need to extend the dependencies of the useEffect for fetching the data (similar to John). But as I don't use state variables for the search form content I have to extend the setFilters reducer in the allJobs slice to optionally reset the page to one (if one of the filters are changed). If only the sort-order is changed I do not reset the current page (but it would be easy to do so, but I think this is a better approach). In my own project I wouldn't have reset the page to 1 in every case neither. Instead I would have made the request with the current page (and if numOfPages would have been less than the current page I would have made a second request for the last page - as this page would be the "closest" to what I was on before).
+
+In the type definition of the setFilters reducer action we have to consider, that it can also have a page property (even if the page number is not a part of the filters in the state).
+
+```ts
+export const setFilters = createAction<
+  FiltersStateType & { page?: number },
+  'allJobs/setFilters'
+>(
+  // additionally to the FiltersStateType also add the possibility to set the page (neccessary for changing the filters in the search container)
+  'allJobs/setFilters'
+);
+```
+
+## Bug fixes / Refactoring
+
+### logging out doesn't reset the state
+
+When the user logs out we need to reset the state (the filter and the jobs - otherwise a different user could see your jobs if he or she uses the same browser). Therefore we add a new thunk in the userSlice (in the meantime I also refactored this slice to have a thunks file, like the other two slices already have). I've not taken the extra mile to correctly type this thunks (mainly because I didn't want to do the work for exploring the response of John's API - but in your own projects I highly recommend doing this work, it will safe you pain later on). So when a user get's logged out, we clear the whole store (and actually we clear the whole store and a part of this is logging the user out ;-) ).
+
+## API error handling
+
+We have the error handler for 401 unauthorized in place, but we still see some (Typescript related) warnings with the error handling of the API calls. So let's use the unknown type to get rid of those. `Unknown` is the typesafe `any`. Everything can be assigned to unknown, but unknown can only be assigned to itself. The idea is, that we can declare something as unknown. Before we can use this "something" we have to check, if it provides what we need (in the special situation).
+
+I've done one bigger example of this check in the error handling, where the error can come from John's API (in this case there is a data property in the response, which has a msg property of type string) or it can come from axios itself (in this case there is an error property direct in the return) or something completly unrecocnised happen (where I don't have any idea, how this "something" looks like.
+
+What I want to return from the error handler ist the msg property of John's API, if it is present. If not, I want to return the message from the axios API, if it is present. And as a last resort I want to return 'something went wrong'.
+
+Following is the code, which achieves this for the parameter error. The type guard is quite long (but not really complex) and I've added comments to every line (so that I understand also in the future, what is going on there).
+
+```ts
+/**
+ * Returns a descriptive error message from an AxiosError (?) instance.
+ * If the error is an AxiosError with a response containing a data object which contains a msg string property,
+ * it returns that message.
+ * If it is a different AxiosError instance, it returns the message property.
+ * Otherwise it returns a default error message ('Something went wrong').
+ *
+ * @param error - The error object to extract the message from.
+ * @returns The error message string.
+ */
+export const returnError = (error: unknown) => {
+  if (
+    !!error &&
+    typeof error === 'object' &&
+    'response' in error &&
+    !!error.response &&
+    typeof error.response ==
+      'object' /* error is an object with a repsonse object property */ &&
+    'data' in error.response &&
+    !!error.response.data &&
+    typeof error.response.data ===
+      'object' /* and within there is a data object property */ &&
+    'msg' in error.response.data &&
+    typeof error.response.data.msg ===
+      'string' /* and within that there is a msg string property */
+  ) {
+    // error satisfies {response: {data: {msg: string}}}
+    return error.response.data.msg;
+  }
+
+  if (error instanceof AxiosError) return error.message; // if it is a different AxiosError instance, return the message
+
+  return 'Something went wrong'; // return a generic error message
+};
+```
+
+###### commit "final version"

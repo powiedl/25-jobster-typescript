@@ -1,11 +1,15 @@
 import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit';
-import { type AxiosError } from 'axios';
-import { customFetch } from '@/utils/axios';
 import {
   getUserFromLocalStorage,
   addUserToLocalStorage,
   removeUserFromLocalStorage,
 } from '@/utils/localStorage';
+import {
+  loginUserThunk,
+  registerUserThunk,
+  updateUserThunk,
+  clearStoreThunk,
+} from './userThunk';
 
 export type User = {
   name?: string;
@@ -34,55 +38,16 @@ const initialState: UserState = {
 
 export const registerUser = createAsyncThunk(
   'user/registerUser',
-  async (user: User, thunkAPI) => {
-    try {
-      //const response = await customFetch.post('/auth/testingRegister', {});
-      const response = await customFetch.post('/auth/register', user);
-      return response.data;
-      //console.log(`Register User: ${JSON.stringify(user)}`);
-      //console.log(response);
-    } catch (error: AxiosError | Error | unknown) {
-      // update the error state in the store (error.response.data.msg) ...
-      return thunkAPI.rejectWithValue(
-        error?.response?.data?.msg || 'Something went wrong'
-      );
-    }
-  }
+  registerUserThunk
 );
 
-export const loginUser = createAsyncThunk(
-  'user/loginUser',
-  async (user: User, thunkAPI) => {
-    try {
-      const response = await customFetch.post('/auth/login', user);
-      return response.data;
-    } catch (error: AxiosError | Error | unknown) {
-      // update the error state in the store (error.response.data.msg) ...
-      return thunkAPI.rejectWithValue(
-        error?.response?.data?.msg || 'Something went wrong'
-      );
-    }
-  }
-);
+export const loginUser = createAsyncThunk('user/loginUser', loginUserThunk);
 
-export const updateUser = createAsyncThunk(
-  'user/updateUser',
-  async (user: User, thunkAPI) => {
-    try {
-      const response = await customFetch.patch('/auth/updateUser', user);
-      return response.data;
-    } catch (error: AxiosError | Error | unknown) {
-      // update the error state in the store (error.response.data.msg) ...
-      if (error?.response?.status === 401) {
-        thunkAPI.dispatch(logoutUser());
-        return thunkAPI.rejectWithValue('Unauthorized! Logging out ...');
-      } else {
-        return thunkAPI.rejectWithValue(
-          error?.response?.data?.msg || 'Something went wrong'
-        );
-      }
-    }
-  }
+export const updateUser = createAsyncThunk('user/updateUser', updateUserThunk);
+
+export const clearStore = createAsyncThunk<void, void>(
+  'user/clearStore',
+  clearStoreThunk
 );
 
 export const clearMessages = createAction<void, 'user/clearMessages'>(
@@ -166,6 +131,9 @@ const userSlice = createSlice({
       state.isLoading = false;
       state.error = payload as string;
       state.success = null;
+    });
+    builder.addCase(clearStore.rejected, (state) => {
+      state.error = 'There was an error ...';
     });
   },
 });

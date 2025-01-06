@@ -132,7 +132,7 @@ const AddEditJob = () => {
             <Button
               type='button'
               onClick={handleClear}
-              className='px-8 bg-green-400 hover:bg-green-600'
+              className='px-8 bg-red-400 hover:bg-destructive'
             >
               Clear
             </Button>

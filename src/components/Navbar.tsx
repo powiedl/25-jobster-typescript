@@ -3,7 +3,7 @@ import Logo from './Logo';
 
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-toolkit';
 import { Button } from './ui/button';
-import { toggleSidebar, logoutUser } from '@/features/user/userSlice';
+import { toggleSidebar, clearStore } from '@/features/user/userSlice';
 import { useState } from 'react';
 
 const Navbar = ({ className = '' }: { className?: string }) => {
@@ -43,7 +43,7 @@ const Navbar = ({ className = '' }: { className?: string }) => {
         <div className='w-full'>
           <Button
             className={showLogout ? 'w-full bg-blue-300 capitalize' : 'hidden'}
-            onClick={() => dispatch(logoutUser())}
+            onClick={() => dispatch(clearStore())}
           >
             logout
           </Button>

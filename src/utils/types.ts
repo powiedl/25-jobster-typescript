@@ -1,4 +1,9 @@
 import * as z from 'zod';
+import {
+  FilterSortType,
+  FiltersStateType,
+} from '@/features/allJobs/allJobsSlice';
+import { All } from '@/features/allJobs/allJobsSlice';
 
 // #region register
 export const registerSchema = z
@@ -95,4 +100,23 @@ export type JobFormType = {
   status: JobStatus;
   jobType: JobType;
 };
+// #endregion
+
+// #region search
+export type Search = {
+  search?: string;
+  searchStatus: FiltersStateType['searchStatus'];
+  searchType: FiltersStateType['searchType'];
+  sort: FiltersStateType['sort'];
+};
+
+export const searchSchema = z.object({
+  search: z.string().optional(),
+  searchStatus: z.union([z.nativeEnum(JobStatus), z.nativeEnum(All)]),
+  searchType: z.union([z.nativeEnum(JobType), z.nativeEnum(All)]),
+  sort: z.nativeEnum(FilterSortType),
+});
+
+export type searchSchemaType = z.infer<typeof searchSchema>;
+
 // #endregion

@@ -3,18 +3,18 @@ import { Job, JobStatus, JobType } from '@/utils/types';
 import { getAllJobsThunk, showStatsThunk } from './allJobsThunk';
 import { ApiJobStatsType, ApiJobsType } from '@/utils/axios';
 
-enum FilterSortType {
+export enum FilterSortType {
   latest = 'latest',
   oldest = 'oldest',
   aToZ = 'a-z',
   zToA = 'z-a',
 }
 
-enum All {
+export enum All {
   all = 'all',
 }
 
-type FiltersStateType = {
+export type FiltersStateType = {
   search: string;
   searchStatus: JobStatus | All;
   searchType: JobType | All;
@@ -76,6 +76,26 @@ export const showLoading = createAction<void, 'allJobs/showLoading'>(
 export const hideLoading = createAction<void, 'allJobs/hideLoading'>(
   'allJobs/hideLoading'
 );
+export const clearAllJobsState = createAction<
+  void,
+  'allJobs/clearAllJobsState'
+>('allJobs/clearAllJobsState');
+
+export const clearFilters = createAction<void, 'allJobs/clearFilters'>(
+  'allJobs/clearFilters'
+);
+
+export const setFilters = createAction<
+  FiltersStateType & { page?: number },
+  'allJobs/setFilters'
+>(
+  // additionally to the FiltersStateType also add the possibility to set the page (neccessary for changing the filters in the search container)
+  'allJobs/setFilters'
+);
+
+export const changePage = createAction<number, 'allJobs/changePage'>(
+  'allJobs/changePage'
+);
 
 const allJobsSlice = createSlice({
   name: 'allJobs',
@@ -86,6 +106,23 @@ const allJobsSlice = createSlice({
     },
     hideLoading: (state) => {
       state.isLoading = false;
+    },
+    clearFilters: (state) => {
+      state.filters = initialState.filters;
+    },
+    setFilters: (state, { payload }) => {
+      console.log('setFilters, payload=', payload);
+      if (payload.page) {
+        state.page = payload.page;
+        delete payload.page;
+      }
+      state.filters = payload;
+    },
+    changePage: (state, { payload }) => {
+      state.page = payload;
+    },
+    clearAllJobsState: () => {
+      return initialState;
     },
   },
   extraReducers: (builder) => {

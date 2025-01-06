@@ -31,7 +31,44 @@ export const checkForUnauthorizedResponse = (
     thunkAPI.dispatch(logoutUser());
     return thunkAPI.rejectWithValue('Unauthorized! Logging out ...');
   }
-  return thunkAPI.rejectWithValue(error?.response?.data?.msg);
+  return thunkAPI.rejectWithValue(
+    (error?.response?.data as { msg: string })?.msg
+  );
+};
+
+/**
+ * Returns a descriptive error message from an AxiosError (?) instance.
+ * If the error is an AxiosError with a response containing a data object which contains a msg string property,
+ * it returns that message.
+ * If it is a different AxiosError instance, it returns the message property.
+ * Otherwise it returns a default error message ('Something went wrong').
+ *
+ * @param error - The error object to extract the message from.
+ * @returns The error message string.
+ */
+export const returnError = (error: unknown) => {
+  if (
+    !!error &&
+    typeof error === 'object' &&
+    'response' in error &&
+    !!error.response &&
+    typeof error.response ==
+      'object' /* error is an object with a repsonse object property */ &&
+    'data' in error.response &&
+    !!error.response.data &&
+    typeof error.response.data ===
+      'object' /* and within there is a data object property */ &&
+    'msg' in error.response.data &&
+    typeof error.response.data.msg ===
+      'string' /* and within that there is a msg string property */
+  ) {
+    // error satisfies {response: {data: {msg: string}}}
+    return error.response.data.msg;
+  }
+
+  if (error instanceof AxiosError) return error.message; // if it is a different AxiosError instance, return the message
+
+  return 'Something went wrong'; // return a generic error message
 };
 
 export interface ApiJobsType {

@@ -16,7 +16,6 @@ import { FaArrowRight } from 'react-icons/fa';
 
 const ChartsContainer = ({
   monthlyApplications,
-  className = '',
 }: {
   monthlyApplications: ApiJobStatsType['monthlyApplications'];
   className?: string;

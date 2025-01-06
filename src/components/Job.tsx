@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { MapPin, Briefcase, CalendarDays, RadioTower } from 'lucide-react';
 import { Badge } from './ui/badge';
@@ -45,7 +44,7 @@ const Job = ({
       color = 'blue';
   }
   return (
-    <Card className='bg-white'>
+    <Card className='bg-white text-black'>
       <CardHeader className='flex flex-row relative'>
         <div className='w-14 h-14 bg-blue-500 rounded-md text-5xl font-semibold uppercase text-white mr-6 leading-[3rem] text-center'>
           <span>{company.charAt(0)}</span>
@@ -64,8 +63,10 @@ const Job = ({
         <JobInfo icon={<Briefcase />} text={jobType} />
         <JobInfo icon={<MapPin />} text={jobLocation} />
         <JobInfo icon={<CalendarDays />} text={createdAtString} />
-        <Badge className={`w-fit justify-center py-1 px-4 bg-${color}-100`}>
-          <JobInfo icon={<RadioTower className='w-4 h-4 t' />} text={status} />
+        <Badge
+          className={`w-fit justify-center py-1 px-4 bg-${color}-100 hover:bg-${color}-100`}
+        >
+          <JobInfo icon={<RadioTower className='w-4 h-4' />} text={status} />
         </Badge>
       </CardContent>
       <CardFooter className='flex gap-4'>
